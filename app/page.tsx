@@ -16,6 +16,7 @@ export default function F1WaitlistPage() {
   const [error, setError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false)
 
   // Dynamic counter starting at 10, +1 every hour
   const getWaitlistCount = () => {
@@ -34,12 +35,14 @@ export default function F1WaitlistPage() {
 
   // Auto-rotate carousel
   useEffect(() => {
+    if (isCarouselPaused) return
+
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % images.length)
-    }, 4000) // Change image every 4 seconds
+    }, 6000) // Change image every 6 seconds
 
     return () => clearInterval(interval)
-  }, [images.length])
+  }, [images.length, isCarouselPaused])
 
   // Update counter every minute to keep it current
   useEffect(() => {
@@ -50,12 +53,27 @@ export default function F1WaitlistPage() {
     return () => clearInterval(interval)
   }, [])
 
+  const pauseCarousel = () => {
+    setIsCarouselPaused(true)
+    // Resume automatic rotation after 20 seconds
+    setTimeout(() => {
+      setIsCarouselPaused(false)
+    }, 20000)
+  }
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length)
+    pauseCarousel()
   }
 
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
+    pauseCarousel()
+  }
+
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index)
+    pauseCarousel()
   }
 
   const validateEmail = (email: string) => {
@@ -153,12 +171,20 @@ export default function F1WaitlistPage() {
           <div className="mb-8 sm:mb-12">
             <div className="relative mx-auto max-w-md sm:max-w-lg">
               <div className="relative overflow-hidden rounded-lg shadow-xl">
-                <div className="relative w-full">
-                  <img
-                    src={images[currentImageIndex].src}
-                    alt={images[currentImageIndex].alt}
-                    className="w-full h-auto transition-opacity duration-500 ease-in-out"
-                  />
+                <div className="relative w-full h-full">
+                  <div
+                    className="flex transition-transform duration-700 ease-in-out"
+                    style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                  >
+                    {images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full h-auto flex-shrink-0"
+                      />
+                    ))}
+                  </div>
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-200/20 to-transparent"></div>
 
@@ -184,7 +210,7 @@ export default function F1WaitlistPage() {
                   {images.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCurrentImageIndex(index)}
+                      onClick={() => goToImage(index)}
                       className={`w-2 h-2 rounded-full transition-all duration-200 ${
                         index === currentImageIndex
                           ? 'bg-white'
