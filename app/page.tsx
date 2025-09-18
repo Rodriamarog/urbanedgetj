@@ -29,8 +29,20 @@ export default function F1WaitlistPage() {
   const [count, setCount] = useState(getWaitlistCount())
 
   const images = [
-    { src: "/ferrari-front.jpg", alt: "Chaqueta F1 Ferrari Frontal" },
-    { src: "/belinda-ferrari-2.png", alt: "Chaqueta F1 Ferrari Belinda" }
+    { src: "/belinda-ferrari-2.png", alt: "Belinda con Chaqueta F1 Ferrari" },
+    { src: "/ferrari-black-front.png", alt: "Chaqueta F1 Ferrari Negra" },
+    { src: "/male-model-1.png", alt: "Modelo Masculino con Chaqueta F1" },
+    { src: "/female-model-1.png", alt: "Modelo Femenino con Chaqueta F1" },
+    { src: "/male-model-2.png", alt: "Modelo Masculino con Chaqueta F1" },
+    { src: "/female-model-2.png", alt: "Modelo Femenino con Chaqueta F1" },
+    { src: "/male-model-3.png", alt: "Modelo Masculino con Chaqueta F1" },
+    { src: "/female-model-3.png", alt: "Modelo Femenino con Chaqueta F1" },
+    { src: "/male-model-4.png", alt: "Modelo Masculino con Chaqueta F1" },
+    { src: "/female-model-4.png", alt: "Modelo Femenino con Chaqueta F1" },
+    { src: "/male-model-5.png", alt: "Modelo Masculino con Chaqueta F1" },
+    { src: "/female-model-5.png", alt: "Modelo Femenino con Chaqueta F1" },
+    { src: "/male-model-6.png", alt: "Modelo Masculino con Chaqueta F1" },
+    { src: "/male-model-7.png", alt: "Modelo Masculino con Chaqueta F1" }
   ]
 
   // Auto-rotate carousel
@@ -170,10 +182,10 @@ export default function F1WaitlistPage() {
           {/* F1 Jacket Image Carousel */}
           <div className="mb-8 sm:mb-12">
             <div className="relative mx-auto max-w-md sm:max-w-lg">
-              <div className="relative overflow-hidden rounded-lg shadow-xl">
+              <div className="relative overflow-hidden rounded-lg shadow-xl aspect-square">
                 <div className="relative w-full h-full">
                   <div
-                    className="flex transition-transform duration-700 ease-in-out"
+                    className="flex transition-transform duration-700 ease-in-out h-full"
                     style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
                   >
                     {images.map((image, index) => (
@@ -181,7 +193,7 @@ export default function F1WaitlistPage() {
                         key={index}
                         src={image.src}
                         alt={image.alt}
-                        className="w-full h-auto flex-shrink-0"
+                        className="w-full h-full object-cover flex-shrink-0"
                       />
                     ))}
                   </div>
