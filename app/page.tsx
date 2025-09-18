@@ -14,9 +14,18 @@ export default function F1WaitlistPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState("")
-  const [count, setCount] = useState(128)
   const [successMessage, setSuccessMessage] = useState("")
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  // Dynamic counter starting at 10, +1 every hour
+  const getWaitlistCount = () => {
+    const startDate = new Date('2025-09-18T00:00:00Z') // Launch date
+    const now = new Date()
+    const hoursPassed = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60))
+    return Math.max(10, 10 + hoursPassed) // Start at 10, add 1 per hour
+  }
+
+  const [count, setCount] = useState(getWaitlistCount())
 
   const images = [
     { src: "/ferrari-front.jpg", alt: "Chaqueta F1 Ferrari Frontal" },
@@ -31,6 +40,15 @@ export default function F1WaitlistPage() {
 
     return () => clearInterval(interval)
   }, [images.length])
+
+  // Update counter every minute to keep it current
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount(getWaitlistCount())
+    }, 60000) // Update every minute
+
+    return () => clearInterval(interval)
+  }, [])
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length)
@@ -191,12 +209,21 @@ export default function F1WaitlistPage() {
                 <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-2 rounded-full inline-block mb-4 font-bold text-sm sm:text-base">
                   GARANTIZA TU 20% DE DESCUENTO
                 </div>
-                <p className="text-base sm:text-lg text-muted-foreground mb-2">
+                <p className="text-base sm:text-lg text-muted-foreground mb-4">
                   Sé el primero en obtener tu chaqueta F1 premium con descuento exclusivo
                 </p>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  Únete a {count}+ entusiastas que ya aseguraron su descuento del 20%
-                </p>
+
+                {/* Social Proof Card */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 max-w-md mx-auto">
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="bg-green-500 rounded-full p-1">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <p className="text-sm text-green-700 font-medium">
+                      ¡Tienes buen gusto! {count}+ personas ya tienen reservado su lugar en la lista de espera
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
