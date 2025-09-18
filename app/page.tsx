@@ -214,12 +214,12 @@ export default function F1WaitlistPage() {
                 </p>
 
                 {/* Social Proof Card */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 max-w-md mx-auto">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-2 max-w-md mx-auto">
                   <div className="flex items-center justify-center space-x-3">
                     <div className="bg-green-500 rounded-full p-1">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
-                    <p className="text-sm text-green-700 font-medium">
+                    <p className="text-xs text-green-700 font-medium">
                       ¡Tienes buen gusto! {count}+ personas ya tienen reservado su lugar en la lista de espera
                     </p>
                   </div>
