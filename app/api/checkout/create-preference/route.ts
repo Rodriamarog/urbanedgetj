@@ -1,0 +1,223 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { MercadoPagoConfig, Preference } from 'mercadopago'
+import {
+  CreateOrderRequest,
+  CreateOrderResponse,
+  Order,
+  MercadoPagoPreference
+} from '@/lib/types/order'
+import { CartItem } from '@/lib/types/cart'
+
+// Initialize MercadoPago
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
+  options: {
+    timeout: 5000,
+    idempotencyKey: 'dev-' + Date.now()
+  }
+})
+
+const preference = new Preference(client)
+
+function generateOrderId(): string {
+  return `ORDER-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+}
+
+function generateExternalReference(): string {
+  return `URBANEDGE-${Date.now()}`
+}
+
+function validateOrderRequest(data: CreateOrderRequest): { valid: boolean; errors: string[] } {
+  const errors: string[] = []
+
+  // Validate items
+  if (!data.items || data.items.length === 0) {
+    errors.push('El carrito está vacío')
+  }
+
+  // Validate customer info
+  if (!data.customerInfo.firstName?.trim()) errors.push('Nombre es requerido')
+  if (!data.customerInfo.lastName?.trim()) errors.push('Apellidos son requeridos')
+  if (!data.customerInfo.email?.trim()) errors.push('Email es requerido')
+  if (!data.customerInfo.phone?.trim()) errors.push('Teléfono es requerido')
+
+  // Validate shipping address
+  if (!data.shippingAddress.name?.trim()) errors.push('Nombre para entrega es requerido')
+  if (!data.shippingAddress.addressLine1?.trim()) errors.push('Dirección es requerida')
+  if (!data.shippingAddress.colonia?.trim()) errors.push('Colonia es requerida')
+  if (!data.shippingAddress.city?.trim()) errors.push('Ciudad es requerida')
+  if (!data.shippingAddress.state?.trim()) errors.push('Estado es requerido')
+  if (!data.shippingAddress.postalCode?.trim()) errors.push('Código postal es requerido')
+
+  // Validate billing address if different
+  if (!data.useSameAddress && data.billingAddress) {
+    if (!data.billingAddress.name?.trim()) errors.push('Nombre para facturación es requerido')
+    if (!data.billingAddress.addressLine1?.trim()) errors.push('Dirección de facturación es requerida')
+  }
+
+  return { valid: errors.length === 0, errors }
+}
+
+function calculateTotals(items: CartItem[], couponCode?: string) {
+  const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+
+  // Apply coupon discount
+  let discount = 0
+  if (couponCode === process.env.NEXT_PUBLIC_COUPON_CODE) {
+    discount = Math.round(subtotal * 0.20) // 20% discount
+  }
+
+  // Calculate shipping (free over $1500 MXN)
+  const shipping = subtotal >= 1500 ? 0 : 150
+
+  // Calculate IVA (16% tax)
+  const taxableAmount = subtotal - discount + shipping
+  const tax = Math.round(taxableAmount * 0.16)
+
+  const total = subtotal + tax + shipping - discount
+
+  return { subtotal, tax, shipping, discount, total }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body: CreateOrderRequest = await request.json()
+
+    // Validate request
+    const validation = validateOrderRequest(body)
+    if (!validation.valid) {
+      return NextResponse.json({
+        success: false,
+        error: 'Datos inválidos',
+        message: validation.errors.join(', ')
+      } as CreateOrderResponse, { status: 400 })
+    }
+
+    // Calculate totals
+    const totals = calculateTotals(body.items, body.couponCode)
+
+    // Generate order
+    const orderId = generateOrderId()
+    const externalReference = generateExternalReference()
+
+    const order: Order = {
+      id: orderId,
+      items: body.items,
+      customerInfo: body.customerInfo,
+      shippingAddress: body.shippingAddress,
+      billingAddress: body.billingAddress,
+      useSameAddress: body.useSameAddress,
+      ...totals,
+      couponCode: body.couponCode,
+      currency: 'MXN',
+      status: 'pending',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      externalReference
+    }
+
+    // Create MercadoPago preference
+    const mpItems: any[] = body.items.map(item => ({
+      id: item.product.id,
+      title: item.product.name,
+      description: `${item.product.description} - Talla: ${item.size.toUpperCase()}`,
+      picture_url: item.product.images?.[0] || undefined,
+      category_id: item.product.category,
+      quantity: item.quantity,
+      currency_id: 'MXN' as const,
+      unit_price: item.price
+    }))
+
+    // Add shipping as item if not free
+    if (totals.shipping > 0) {
+      mpItems.push({
+        id: 'shipping',
+        title: 'Envío',
+        description: 'Costo de envío a domicilio',
+        quantity: 1,
+        currency_id: 'MXN' as const,
+        unit_price: totals.shipping
+      })
+    }
+
+    // Add tax as item
+    if (totals.tax > 0) {
+      mpItems.push({
+        id: 'tax',
+        title: 'IVA (16%)',
+        description: 'Impuesto al Valor Agregado',
+        quantity: 1,
+        currency_id: 'MXN' as const,
+        unit_price: totals.tax
+      })
+    }
+
+    // Apply discount as negative item
+    if (totals.discount > 0) {
+      mpItems.push({
+        id: 'discount',
+        title: `Descuento (${body.couponCode})`,
+        description: 'Cupón de descuento aplicado',
+        quantity: 1,
+        currency_id: 'MXN' as const,
+        unit_price: -totals.discount
+      })
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+
+    const preferenceData: MercadoPagoPreference = {
+      id: '', // Will be set by MercadoPago
+      items: mpItems,
+      payer: {
+        name: body.customerInfo.firstName,
+        surname: body.customerInfo.lastName,
+        email: body.customerInfo.email,
+        phone: {
+          number: body.customerInfo.phone.replace(/[^\d]/g, '') // Remove non-digits
+        }
+      },
+      back_urls: {
+        success: `${baseUrl}${process.env.MERCADOPAGO_SUCCESS_URL}?order_id=${orderId}`,
+        failure: `${baseUrl}${process.env.MERCADOPAGO_FAILURE_URL}?order_id=${orderId}`,
+        pending: `${baseUrl}${process.env.MERCADOPAGO_PENDING_URL}?order_id=${orderId}`
+      },
+      auto_return: 'approved',
+      payment_methods: {
+        installments: 12 // Max installments
+      },
+      notification_url: `${baseUrl}/api/webhook/mercadopago`,
+      statement_descriptor: 'URBAN EDGE TJ',
+      external_reference: externalReference,
+      expires: true,
+      expiration_date_from: new Date().toISOString(),
+      expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+    }
+
+    // Create preference in MercadoPago
+    const mpPreference = await preference.create({ body: preferenceData })
+
+    // Update order with preference ID
+    order.preferenceId = mpPreference.id
+    order.mercadoPagoId = mpPreference.id
+
+    // TODO: In a real app, save order to database
+    // For now, we'll return it to be stored in localStorage
+
+    return NextResponse.json({
+      success: true,
+      order,
+      preferenceId: mpPreference.id,
+      initPoint: mpPreference.init_point
+    } as CreateOrderResponse)
+
+  } catch (error) {
+    console.error('Checkout preference creation error:', error)
+
+    return NextResponse.json({
+      success: false,
+      error: 'Error interno del servidor',
+      message: 'No se pudo crear la preferencia de pago. Intenta de nuevo.'
+    } as CreateOrderResponse, { status: 500 })
+  }
+}

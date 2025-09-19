@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import Link from "next/link"
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -318,6 +319,14 @@ export default function F1WaitlistPage() {
 
       {/* Footer */}
       <footer className="text-center py-6 sm:py-8 border-t border-border px-4">
+        <div className="mb-3">
+          <Link
+            href="/store"
+            className="text-muted-foreground hover:text-foreground text-xs sm:text-sm transition-colors duration-200 underline decoration-dotted"
+          >
+            Explorar Tienda Completa →
+          </Link>
+        </div>
         <p className="text-muted-foreground text-xs sm:text-sm">© 2024 Urban Edge TJ. Todos los derechos reservados.</p>
       </footer>
     </div>
