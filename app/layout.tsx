@@ -5,7 +5,6 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { FacebookPixelProvider } from "../components/FacebookPixel"
-import { MercadoPagoProvider } from "@/components/providers/MercadoPagoProvider"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
@@ -24,10 +23,8 @@ export default function RootLayout({
     <html lang="es">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <FacebookPixelProvider>
-          <MercadoPagoProvider>
-            <Suspense fallback={null}>{children}</Suspense>
-            <Toaster />
-          </MercadoPagoProvider>
+          <Suspense fallback={null}>{children}</Suspense>
+          <Toaster />
         </FacebookPixelProvider>
         <Analytics />
       </body>

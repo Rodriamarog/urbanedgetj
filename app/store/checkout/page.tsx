@@ -31,14 +31,11 @@ import { useCart } from "@/lib/context/CartContext"
 import { MEXICAN_STATES } from "@/lib/types/cart"
 import { toast } from "@/lib/hooks/use-toast"
 import { CreateOrderRequest, CreateOrderResponse, Order } from "@/lib/types/order"
-import { PaymentForm } from "@/components/payment/PaymentForm"
 
 export default function CheckoutPage() {
   const { state } = useCart()
   const [useSameAddress, setUseSameAddress] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [currentOrder, setCurrentOrder] = useState<Order | null>(null)
-  const [showPayment, setShowPayment] = useState(false)
 
   // Form state
   const [contactInfo, setContactInfo] = useState({
@@ -142,14 +139,17 @@ export default function CheckoutPage() {
 
       const data: CreateOrderResponse = await response.json()
 
-      if (data.success && data.order) {
-        setCurrentOrder(data.order)
-        setShowPayment(true)
+      if (data.success && data.order && data.initPoint) {
+        // Clear cart since order was created successfully
+        // TODO: In production, you might want to clear cart only after successful payment
 
         toast({
-          title: "Pedido creado",
-          description: "Procede con el pago para completar tu compra.",
+          title: "Redirigiendo a MercadoPago",
+          description: "Te llevaremos a la página de pago segura.",
         })
+
+        // Redirect to MercadoPago Checkout Pro
+        window.location.href = data.initPoint
       } else {
         throw new Error(data.message || 'Error al crear el pedido')
       }
@@ -166,24 +166,6 @@ export default function CheckoutPage() {
     }
   }
 
-  const handlePaymentSuccess = (paymentId: string) => {
-    toast({
-      title: "¡Pago exitoso!",
-      description: "Tu pedido ha sido procesado correctamente.",
-    })
-
-    // TODO: Redirect to success page
-    console.log('Payment successful:', paymentId)
-  }
-
-  const handlePaymentError = (error: string) => {
-    toast({
-      title: "Error de pago",
-      description: error,
-      variant: "destructive"
-    })
-    setShowPayment(false)
-  }
 
   if (state.items.length === 0) {
     return (
@@ -239,15 +221,7 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Forms */}
         <div className="lg:col-span-2 space-y-8">
-          {showPayment && currentOrder ? (
-            <PaymentForm
-              order={currentOrder}
-              onPaymentSuccess={handlePaymentSuccess}
-              onPaymentError={handlePaymentError}
-            />
-          ) : (
-            <>
-            {/* Contact and Address Forms */}
+          {/* Contact and Address Forms */}
           {/* Contact Information */}
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-6 flex items-center">
@@ -478,8 +452,6 @@ export default function CheckoutPage() {
               </div>
             )}
           </Card>
-            </>
-          )}
         </div>
 
         {/* Order Summary */}
@@ -556,7 +528,7 @@ export default function CheckoutPage() {
               disabled={isProcessing}
             >
               <CreditCard className="w-5 h-5 mr-2" />
-              {isProcessing ? "Procesando..." : "Proceder al Pago"}
+              {isProcessing ? "Creando pedido..." : "Pagar con MercadoPago"}
             </Button>
 
             {/* Security Info */}
@@ -568,6 +540,9 @@ export default function CheckoutPage() {
               <div className="flex items-center">
                 <Truck className="w-4 h-4 mr-2" />
                 <span>Entrega en 3-5 días hábiles</span>
+              </div>
+              <div className="mt-3 p-2 bg-muted rounded text-center">
+                <span>Serás redirigido a MercadoPago para completar tu pago de forma segura</span>
               </div>
             </div>
           </Card>

@@ -95,17 +95,6 @@ const ProductCard: React.FC<{ product: Product; viewMode: ViewMode }> = ({ produ
               fill
               className="object-cover rounded-lg"
             />
-            {product.isNew && (
-              <Badge className="absolute top-2 left-2 bg-blue-500 text-white">
-                Nuevo
-              </Badge>
-            )}
-            {product.isBestseller && (
-              <Badge className="absolute top-2 right-2 bg-orange-500 text-white">
-                <Crown className="w-3 h-3 mr-1" />
-                Bestseller
-              </Badge>
-            )}
           </div>
 
           <div className="flex-1">
@@ -148,9 +137,6 @@ const ProductCard: React.FC<{ product: Product; viewMode: ViewMode }> = ({ produ
                     <span className="text-sm text-muted-foreground line-through">
                       ${product.originalPrice.toLocaleString()}
                     </span>
-                    <Badge variant="destructive" className="text-xs">
-                      -{product.discountPercentage}%
-                    </Badge>
                   </>
                 )}
               </div>
@@ -189,35 +175,6 @@ const ProductCard: React.FC<{ product: Product; viewMode: ViewMode }> = ({ produ
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
 
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.isNew && (
-              <Badge className="bg-blue-500 text-white">
-                Nuevo
-              </Badge>
-            )}
-            {product.isBestseller && (
-              <Badge className="bg-orange-500 text-white">
-                <Crown className="w-3 h-3 mr-1" />
-                Bestseller
-              </Badge>
-            )}
-            {product.isLimited && (
-              <Badge className="bg-purple-500 text-white">
-                Limitado
-              </Badge>
-            )}
-          </div>
-
-          {/* Discount Badge */}
-          {product.discountPercentage && (
-            <Badge
-              variant="destructive"
-              className="absolute top-3 right-3"
-            >
-              -{product.discountPercentage}%
-            </Badge>
-          )}
 
           {/* Wishlist Button */}
           <Button
@@ -229,7 +186,6 @@ const ProductCard: React.FC<{ product: Product; viewMode: ViewMode }> = ({ produ
               e.stopPropagation()
               toggleItem(product.id)
             }}
-            style={{ marginTop: product.discountPercentage ? '2.5rem' : '0' }}
           >
             <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
           </Button>

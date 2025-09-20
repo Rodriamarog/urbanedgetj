@@ -24,7 +24,6 @@ const featuredProducts = [
     price: "2,899",
     originalPrice: "3,499",
     image: "/ferrari-black-front.png",
-    badge: "Bestseller",
     category: "Chaquetas"
   },
   {
@@ -33,7 +32,6 @@ const featuredProducts = [
     price: "1,299",
     originalPrice: "1,599",
     image: "/male-model-1.png",
-    badge: "Nuevo",
     category: "Hoodies"
   },
   {
@@ -42,7 +40,6 @@ const featuredProducts = [
     price: "599",
     originalPrice: "799",
     image: "/female-model-1.png",
-    badge: "Limitado",
     category: "Camisetas"
   }
 ]
@@ -192,13 +189,8 @@ export default function StorePage() {
                     alt={product.name}
                     width={400}
                     height={500}
-                    className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-80 object-contain bg-muted group-hover:scale-105 transition-transform duration-300"
                   />
-                  <Badge
-                    className="absolute top-4 left-4 bg-primary text-primary-foreground"
-                  >
-                    {product.badge}
-                  </Badge>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                 </div>
 

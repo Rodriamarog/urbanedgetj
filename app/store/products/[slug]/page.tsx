@@ -109,26 +109,6 @@ const ProductImageGallery: React.FC<{ product: Product }> = ({ product }) => {
           <ZoomIn className="w-4 h-4" />
         </Button>
 
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
-          {product.isNew && (
-            <Badge className="bg-blue-500 text-white">Nuevo</Badge>
-          )}
-          {product.isBestseller && (
-            <Badge className="bg-orange-500 text-white">
-              <Crown className="w-3 h-3 mr-1" />
-              Bestseller
-            </Badge>
-          )}
-          {product.isLimited && (
-            <Badge className="bg-purple-500 text-white">Limitado</Badge>
-          )}
-          {product.discountPercentage && (
-            <Badge variant="destructive">
-              -{product.discountPercentage}%
-            </Badge>
-          )}
-        </div>
       </div>
 
       {/* Thumbnail Gallery */}
@@ -340,13 +320,6 @@ export default function ProductPage({ params }: ProductPageProps) {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="outline">{categoryName}</Badge>
-              {product.isNew && <Badge className="bg-blue-500 text-white">Nuevo</Badge>}
-              {product.isBestseller && (
-                <Badge className="bg-orange-500 text-white">
-                  <Crown className="w-3 h-3 mr-1" />
-                  Bestseller
-                </Badge>
-              )}
             </div>
             <h1 className="text-3xl font-bold text-foreground mb-2">{product.name}</h1>
             <p className="text-lg text-muted-foreground">{product.shortDescription}</p>
@@ -369,11 +342,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </>
               )}
             </div>
-            {product.discountPercentage && (
-              <p className="text-sm text-green-600 font-medium">
-                ¡{product.discountPercentage}% de descuento!
-              </p>
-            )}
           </div>
 
           <Separator />
@@ -582,12 +550,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    {relatedProduct.isBestseller && (
-                      <Badge className="absolute top-2 left-2 bg-orange-500 text-white">
-                        <Crown className="w-3 h-3 mr-1" />
-                        Bestseller
-                      </Badge>
-                    )}
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
