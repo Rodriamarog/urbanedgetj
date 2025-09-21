@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -17,30 +17,46 @@ import {
   TrendingUp
 } from "lucide-react"
 
-const featuredProducts = [
+const products = [
   {
-    id: "f1-ferrari-jacket",
+    id: "ferrari-jacket-male",
     name: "Chaqueta F1 Ferrari",
     price: "2,899",
     originalPrice: "3,499",
-    image: "/ferrari-black-front.png",
-    category: "Chaquetas"
-  },
-  {
-    id: "urban-hoodie",
-    name: "Hoodie Urban Edge",
-    price: "1,299",
-    originalPrice: "1,599",
     image: "/male-model-1.png",
-    category: "Hoodies"
+    productImage: "/ferrari-black-front.png",
+    category: "Hombre",
+    brand: "Ferrari"
   },
   {
-    id: "street-tee",
-    name: "Camiseta Street",
-    price: "599",
-    originalPrice: "799",
+    id: "ferrari-jacket-female",
+    name: "Chaqueta F1 Ferrari",
+    price: "2,899",
+    originalPrice: "3,499",
     image: "/female-model-1.png",
-    category: "Camisetas"
+    productImage: "/ferrari-black-front.png",
+    category: "Mujer",
+    brand: "Ferrari"
+  },
+  {
+    id: "redbull-jacket-male",
+    name: "Chaqueta Red Bull Racing",
+    price: "2,799",
+    originalPrice: "3,399",
+    image: "/redbull-male-1.png",
+    productImage: "/redbull-front.png",
+    category: "Hombre",
+    brand: "Red Bull"
+  },
+  {
+    id: "redbull-jacket-female",
+    name: "Chaqueta Red Bull Racing",
+    price: "2,799",
+    originalPrice: "3,399",
+    image: "/redbull-female-1.png",
+    productImage: "/redbull-front.png",
+    category: "Mujer",
+    brand: "Red Bull"
   }
 ]
 
@@ -68,6 +84,12 @@ const brandValues = [
 ]
 
 export default function StorePage() {
+  const [selectedCategory, setSelectedCategory] = useState<"Todos" | "Hombre" | "Mujer">("Todos")
+
+  const filteredProducts = selectedCategory === "Todos"
+    ? products
+    : products.filter(product => product.category === selectedCategory)
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -173,15 +195,29 @@ export default function StorePage() {
               </Badge>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Lo Más Popular
+              Chaquetas F1 Racing
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Descubre nuestros productos más vendidos y las últimas incorporaciones a nuestra colección premium.
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+              Colección exclusiva de chaquetas F1 para hombre y mujer. Diseños Ferrari y Red Bull Racing.
             </p>
+
+            {/* Category Filter */}
+            <div className="flex justify-center gap-4 mb-8">
+              {["Todos", "Hombre", "Mujer"].map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(category as "Todos" | "Hombre" | "Mujer")}
+                  className="min-w-[100px]"
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {filteredProducts.map((product) => (
               <Card key={product.id} className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300">
                 <div className="relative overflow-hidden">
                   <Image

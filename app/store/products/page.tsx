@@ -362,7 +362,7 @@ export default function ProductsPage() {
 
       {/* Category Tabs */}
       <Tabs value={selectedCategory} onValueChange={(value) => setSelectedCategory(value as ProductCategory | 'all')} className="mb-8">
-        <TabsList className="grid w-full grid-cols-5 lg:w-fit lg:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3 lg:w-fit lg:grid-cols-3">
           <TabsTrigger value="all" className="flex items-center space-x-2">
             <span>Todos</span>
             <Badge variant="secondary" className="ml-2">

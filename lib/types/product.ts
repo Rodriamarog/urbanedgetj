@@ -72,7 +72,7 @@ export interface ProductColor {
   label: string
 }
 
-export type ProductCategory = 'jackets' | 'hoodies' | 't-shirts' | 'accessories'
+export type ProductCategory = 'hombre' | 'mujer'
 
 export interface ProductFilter {
   category?: ProductCategory
@@ -115,10 +115,8 @@ export interface Cart {
 }
 
 export const PRODUCT_CATEGORIES = [
-  { id: 'jackets', name: 'Chaquetas', slug: 'chaquetas' },
-  { id: 'hoodies', name: 'Hoodies', slug: 'hoodies' },
-  { id: 't-shirts', name: 'Camisetas', slug: 'camisetas' },
-  { id: 'accessories', name: 'Accesorios', slug: 'accesorios' },
+  { id: 'hombre', name: 'Hombre', slug: 'hombre' },
+  { id: 'mujer', name: 'Mujer', slug: 'mujer' },
 ] as const
 
 export const PRODUCT_SIZES = [
