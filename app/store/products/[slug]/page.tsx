@@ -32,16 +32,27 @@ export const dynamicParams = true
 export const revalidate = false
 
 export default function ProductPage({ params }: ProductPageProps) {
+  console.log('🔍 ProductPage rendering with params:', params)
+  console.log('🔍 Looking for slug:', params.slug)
+
   const product = getProductBySlug(params.slug)
+  console.log('🔍 Product found:', product ? 'YES' : 'NO')
+  console.log('🔍 Product data:', product ? { id: product.id, name: product.name, slug: product.slug } : 'null')
 
   if (!product) {
+    console.log('❌ Product not found, calling notFound()')
     notFound()
   }
 
   const relatedProducts = getRelatedProducts(product.id, product.category)
   const categoryName = PRODUCT_CATEGORIES.find(cat => cat.id === product.category)?.name
 
-  return (
+  console.log('🔍 Related products:', relatedProducts.length)
+  console.log('🔍 Category name:', categoryName)
+  console.log('🔍 About to render component')
+
+  try {
+    return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumbs */}
       <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
@@ -96,7 +107,11 @@ export default function ProductPage({ params }: ProductPageProps) {
         <Separator className="mb-8" />
 
         {/* Interactive Client Component */}
-        <ProductPageClient product={product} />
+        <div>
+          <p style={{color: 'green'}}>About to render ProductPageClient...</p>
+          <ProductPageClient product={product} />
+          <p style={{color: 'green'}}>ProductPageClient rendered successfully</p>
+        </div>
 
         {/* Features */}
         <div className="grid grid-cols-3 gap-4 pt-6 mt-8">
@@ -236,5 +251,16 @@ export default function ProductPage({ params }: ProductPageProps) {
         </div>
       )}
     </div>
-  )
+    )
+  } catch (error) {
+    console.error('❌ Error rendering ProductPage:', error)
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1>Error Loading Product</h1>
+        <p>Product slug: {params.slug}</p>
+        <p>Error: {error instanceof Error ? error.message : 'Unknown error'}</p>
+        <pre>{JSON.stringify(error, null, 2)}</pre>
+      </div>
+    )
+  }
 }

@@ -199,11 +199,15 @@ const SizeSelector: React.FC<{
 }
 
 export default function ProductPageClient({ product }: ProductPageClientProps) {
+  console.log('🎯 ProductPageClient rendering with product:', product?.id, product?.name)
+
   const { addItem, getItemQuantity } = useCart()
   const { toggleItem, isInWishlist } = useWishlist()
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+
+  console.log('🎯 ProductPageClient hooks initialized')
 
   const isWishlisted = isInWishlist(product.id)
 

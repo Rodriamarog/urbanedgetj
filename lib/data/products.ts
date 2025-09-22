@@ -323,7 +323,11 @@ export const products: Product[] = [
 ]
 
 export const getProductBySlug = (slug: string): Product | undefined => {
-  return products.find(product => product.slug === slug)
+  console.log('🔍 getProductBySlug called with:', slug)
+  console.log('🔍 Available products:', products.map(p => p.slug))
+  const found = products.find(product => product.slug === slug)
+  console.log('🔍 Found product:', found ? found.slug : 'NOT FOUND')
+  return found
 }
 
 export const getProductsByCategory = (category: string): Product[] => {
