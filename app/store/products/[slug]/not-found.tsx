@@ -1,7 +1,10 @@
+"use client"
+
 import React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { LinkButton } from "@/components/ui/link-button"
 import { Search, Home, Package, ArrowLeft } from "lucide-react"
 
 export default function ProductNotFound() {
@@ -24,19 +27,15 @@ export default function ProductNotFound() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild>
-              <Link href="/store/products">
-                <Package className="w-5 h-5 mr-2" />
-                Ver Todos los Productos
-              </Link>
-            </Button>
+            <LinkButton size="lg" href="/store/products">
+              <Package className="w-5 h-5 mr-2" />
+              Ver Todos los Productos
+            </LinkButton>
 
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/store">
-                <Home className="w-5 h-5 mr-2" />
-                Ir a la Tienda
-              </Link>
-            </Button>
+            <LinkButton variant="outline" size="lg" href="/store">
+              <Home className="w-5 h-5 mr-2" />
+              Ir a la Tienda
+            </LinkButton>
           </div>
 
           {/* Suggestions */}
@@ -72,18 +71,18 @@ export default function ProductNotFound() {
               Categorías Populares
             </h4>
             <div className="flex flex-wrap gap-2 justify-center">
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/store/products?category=jackets">Chaquetas</Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/store/products?category=hoodies">Hoodies</Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/store/products?category=t-shirts">Camisetas</Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/store/products?category=accessories">Accesorios</Link>
-              </Button>
+              <LinkButton variant="outline" size="sm" href="/store/products?category=jackets">
+                Chaquetas
+              </LinkButton>
+              <LinkButton variant="outline" size="sm" href="/store/products?category=hoodies">
+                Hoodies
+              </LinkButton>
+              <LinkButton variant="outline" size="sm" href="/store/products?category=t-shirts">
+                Camisetas
+              </LinkButton>
+              <LinkButton variant="outline" size="sm" href="/store/products?category=accessories">
+                Accesorios
+              </LinkButton>
             </div>
           </div>
         </Card>

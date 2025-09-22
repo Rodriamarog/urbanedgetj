@@ -1,8 +1,8 @@
 import React from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { LinkButton } from "@/components/ui/link-button"
 
 import { Product } from "@/lib/types/product"
 
@@ -23,11 +23,12 @@ export default function RelatedProducts({ relatedProducts, categoryName, categor
         <h2 className="text-2xl font-bold text-foreground">
           También te puede interesar
         </h2>
-        <Button variant="outline" asChild>
-          <Link href={`/store/products?category=${categoryId}`}>
-            Ver más en {categoryName}
-          </Link>
-        </Button>
+        <LinkButton
+          href={`/store/products?category=${categoryId}`}
+          variant="outline"
+        >
+          Ver más en {categoryName}
+        </LinkButton>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
