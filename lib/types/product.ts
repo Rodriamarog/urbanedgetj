@@ -25,8 +25,8 @@ export interface Product {
   tags: string[]
   seoTitle?: string
   seoDescription?: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ProductImage {
@@ -110,8 +110,8 @@ export interface Cart {
   total: number
   couponCode?: string
   discount?: number
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
 }
 
 export const PRODUCT_CATEGORIES = [

@@ -9,7 +9,7 @@ export interface CartItem {
   quantity: number
   price: number
   originalPrice?: number
-  addedAt: Date
+  addedAt: string
 }
 
 export interface Cart {
@@ -20,7 +20,7 @@ export interface Cart {
   discount: number
   couponCode?: string
   total: number
-  updatedAt: Date
+  updatedAt: string
 }
 
 export interface CartStorage {
@@ -59,7 +59,7 @@ export interface CheckoutData {
 
 export interface WishlistItem {
   productId: string
-  addedAt: Date
+  addedAt: string
 }
 
 export interface WishlistStorage {

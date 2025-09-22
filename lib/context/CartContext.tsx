@@ -49,7 +49,7 @@ const initialState: CartState = {
   total: 0,
   itemCount: 0,
   isLoading: true,
-  updatedAt: new Date()
+  updatedAt: new Date().toISOString()
 }
 
 // Cart reducer
@@ -66,7 +66,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         itemCount,
         ...totals,
         isLoading: false,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -105,7 +105,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 
         newItems = state.items.map(item =>
           item.id === existingItem.id
-            ? { ...item, quantity: newQuantity, addedAt: new Date() }
+            ? { ...item, quantity: newQuantity, addedAt: new Date().toISOString() }
             : item
         )
       } else {
@@ -119,7 +119,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           quantity,
           price: product.price,
           originalPrice: product.originalPrice,
-          addedAt: new Date()
+          addedAt: new Date().toISOString()
         }
         newItems = [...state.items, newItem]
       }
@@ -138,7 +138,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: newItems,
         itemCount,
         ...totals,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -152,7 +152,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: newItems,
         itemCount,
         ...totals,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -176,7 +176,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
             })
             return item // Keep original quantity
           }
-          return { ...item, quantity, addedAt: new Date() }
+          return { ...item, quantity, addedAt: new Date().toISOString() }
         }
         return item
       })
@@ -189,7 +189,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: newItems,
         itemCount,
         ...totals,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -217,7 +217,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...state,
         couponCode,
         ...totals,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -228,7 +228,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...state,
         couponCode: undefined,
         ...totals,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -288,7 +288,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const storageCart: CartStorage = {
         items: dehydrateCartItems(state.items),
         couponCode: state.couponCode,
-        updatedAt: state.updatedAt.toISOString()
+        updatedAt: state.updatedAt
       }
       saveCartToStorage(storageCart)
     }

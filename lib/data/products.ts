@@ -77,8 +77,8 @@ export const products: Product[] = [
     tags: ['f1', 'ferrari', 'racing', 'premium', 'chaqueta', 'hombre'],
     seoTitle: 'Chaqueta F1 Ferrari Hombre Premium - Urban Edge TJ',
     seoDescription: 'Chaqueta F1 Ferrari para hombre. Diseño auténtico, materiales de alta calidad. Envío gratis en México.',
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-09-19')
+    createdAt: '2024-01-15T00:00:00.000Z',
+    updatedAt: '2024-09-19T00:00:00.000Z'
   },
 
   // Ferrari Female
@@ -157,8 +157,8 @@ export const products: Product[] = [
     tags: ['f1', 'ferrari', 'racing', 'premium', 'chaqueta', 'mujer'],
     seoTitle: 'Chaqueta F1 Ferrari Mujer Premium - Urban Edge TJ',
     seoDescription: 'Chaqueta F1 Ferrari para mujer. Diseño auténtico, materiales de alta calidad. Envío gratis en México.',
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-09-19')
+    createdAt: '2024-01-15T00:00:00.000Z',
+    updatedAt: '2024-09-19T00:00:00.000Z'
   },
 
   // Red Bull Male
@@ -237,8 +237,8 @@ export const products: Product[] = [
     tags: ['f1', 'redbull', 'racing', 'premium', 'chaqueta', 'hombre'],
     seoTitle: 'Chaqueta Red Bull Racing Hombre Premium - Urban Edge TJ',
     seoDescription: 'Chaqueta Red Bull Racing para hombre. Diseño auténtico, materiales de alta calidad. Envío gratis en México.',
-    createdAt: new Date('2024-02-01'),
-    updatedAt: new Date('2024-09-19')
+    createdAt: '2024-02-01T00:00:00.000Z',
+    updatedAt: '2024-09-19T00:00:00.000Z'
   },
 
   // Red Bull Female
@@ -317,8 +317,8 @@ export const products: Product[] = [
     tags: ['f1', 'redbull', 'racing', 'premium', 'chaqueta', 'mujer'],
     seoTitle: 'Chaqueta Red Bull Racing Mujer Premium - Urban Edge TJ',
     seoDescription: 'Chaqueta Red Bull Racing para mujer. Diseño auténtico, materiales de alta calidad. Envío gratis en México.',
-    createdAt: new Date('2024-02-01'),
-    updatedAt: new Date('2024-09-19')
+    createdAt: '2024-02-01T00:00:00.000Z',
+    updatedAt: '2024-09-19T00:00:00.000Z'
   }
 ]
 

@@ -58,7 +58,7 @@ export const hydrateCartItems = (storageItems: CartStorage['items']): CartItem[]
     return {
       ...item,
       product,
-      addedAt: new Date(item.addedAt)
+      addedAt: item.addedAt
     }
   }).filter(Boolean) as CartItem[]
 }

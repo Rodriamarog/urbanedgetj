@@ -44,14 +44,14 @@ type WishlistAction =
 interface WishlistState {
   items: WishlistItem[]
   isLoading: boolean
-  updatedAt: Date
+  updatedAt: string
 }
 
 // Initial state
 const initialState: WishlistState = {
   items: [],
   isLoading: true,
-  updatedAt: new Date()
+  updatedAt: new Date().toISOString()
 }
 
 // Wishlist reducer
@@ -62,7 +62,7 @@ const wishlistReducer = (state: WishlistState, action: WishlistAction): Wishlist
         ...state,
         items: action.payload,
         isLoading: false,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -76,13 +76,13 @@ const wishlistReducer = (state: WishlistState, action: WishlistAction): Wishlist
 
       const newItem: WishlistItem = {
         productId,
-        addedAt: new Date()
+        addedAt: new Date().toISOString()
       }
 
       return {
         ...state,
         items: [...state.items, newItem],
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -92,7 +92,7 @@ const wishlistReducer = (state: WishlistState, action: WishlistAction): Wishlist
       return {
         ...state,
         items: state.items.filter(item => item.productId !== productId),
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
     }
 
@@ -132,10 +132,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
   useEffect(() => {
     const storedWishlist = getWishlistFromStorage()
     if (storedWishlist) {
-      const items = storedWishlist.items.map(item => ({
-        ...item,
-        addedAt: new Date(item.addedAt)
-      }))
+      const items = storedWishlist.items
       dispatch({ type: 'LOAD_WISHLIST', payload: items })
     } else {
       dispatch({ type: 'LOAD_WISHLIST', payload: [] })
@@ -147,7 +144,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     if (!state.isLoading) {
       const storageWishlist: WishlistStorage = {
         items: state.items,
-        updatedAt: state.updatedAt.toISOString()
+        updatedAt: state.updatedAt
       }
       saveWishlistToStorage(storageWishlist)
     }

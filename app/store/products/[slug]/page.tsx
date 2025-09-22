@@ -1,9 +1,12 @@
+import React from "react"
 import { notFound } from "next/navigation"
 
-// Route segment config - force dynamic rendering
-export const dynamic = 'force-dynamic'
-export const dynamicParams = true
-export const revalidate = false
+import { getProductBySlug, getRelatedProducts } from "@/lib/data/products"
+import { PRODUCT_CATEGORIES } from "@/lib/types/product"
+import ProductPageClient from "./components/ProductPageClient"
+import ProductInfo from "./components/ProductInfo"
+import ProductFeatures from "./components/ProductFeatures"
+import RelatedProducts from "./components/RelatedProducts"
 
 interface ProductPageProps {
   params: {
@@ -11,35 +14,60 @@ interface ProductPageProps {
   }
 }
 
+// Route segment config - force dynamic rendering
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+export const revalidate = false
+
 export default function ProductPage({ params }: ProductPageProps) {
-  console.log('🔍 Simple ProductPage rendering with params:', params)
+  console.log('🔍 ProductPage rendering with params:', params)
+  console.log('🔍 Looking for slug:', params.slug)
 
-  // Simple hardcoded check first
-  const validSlugs = [
-    'chaqueta-f1-ferrari-hombre',
-    'chaqueta-f1-ferrari-mujer',
-    'chaqueta-red-bull-racing-hombre',
-    'chaqueta-red-bull-racing-mujer'
-  ]
+  const product = getProductBySlug(params.slug)
+  console.log('🔍 Product found:', product ? 'YES' : 'NO')
+  console.log('🔍 Product data:', product ? { id: product.id, name: product.name, slug: product.slug } : 'null')
 
-  if (!validSlugs.includes(params.slug)) {
-    console.log('❌ Invalid slug, calling notFound()')
+  if (!product) {
+    console.log('❌ Product not found, calling notFound()')
     notFound()
   }
 
-  console.log('✅ Valid slug, rendering page')
+  const relatedProducts = getRelatedProducts(product.id, product.category)
+  const categoryName = PRODUCT_CATEGORIES.find(cat => cat.id === product.category)?.name
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">Product Page</h1>
-      <p>Slug: {params.slug}</p>
-      <p>This is a simple test page to verify server rendering works.</p>
+  console.log('🔍 Related products:', relatedProducts.length)
+  console.log('🔍 Category name:', categoryName)
+  console.log('🔍 About to render component')
 
-      <div className="mt-8 p-4 bg-green-100 rounded">
-        <p>✅ Server component rendered successfully!</p>
-        <p>✅ No 500 error</p>
-        <p>✅ Product slug: {params.slug}</p>
+  try {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        {/* Product Info (Server Component) */}
+        <ProductInfo product={product} />
+
+        {/* Interactive Product Components (Client) */}
+        <div className="mb-16">
+          <ProductPageClient product={product} />
+          <ProductFeatures />
+        </div>
+
+        {/* Related Products (Server Component) */}
+        <RelatedProducts
+          relatedProducts={relatedProducts}
+          categoryName={categoryName}
+          categoryId={product.category}
+        />
       </div>
-    </div>
-  )
+    )
+  } catch (error) {
+    console.error('❌ Error rendering ProductPage:', error)
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1>Error Loading Product</h1>
+        <p>Product slug: {params.slug}</p>
+        <p>Error: {error instanceof Error ? error.message : 'Unknown error'}</p>
+        <pre>{JSON.stringify(error, null, 2)}</pre>
+      </div>
+    )
+  }
 }
