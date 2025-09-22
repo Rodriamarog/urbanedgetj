@@ -26,12 +26,8 @@ interface ProductPageProps {
   }
 }
 
-// Generate static params for all products
-export async function generateStaticParams() {
-  return products.map((product) => ({
-    slug: product.slug,
-  }))
-}
+// Dynamic route - no static generation to avoid build timeouts
+export const dynamic = 'force-dynamic'
 
 export default function ProductPage({ params }: ProductPageProps) {
   const product = getProductBySlug(params.slug)
