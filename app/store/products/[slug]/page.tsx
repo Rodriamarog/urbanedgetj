@@ -26,8 +26,10 @@ interface ProductPageProps {
   }
 }
 
-// Dynamic route - no static generation to avoid build timeouts
+// Route segment config - force dynamic rendering
 export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+export const revalidate = false
 
 export default function ProductPage({ params }: ProductPageProps) {
   const product = getProductBySlug(params.slug)
