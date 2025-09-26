@@ -4,11 +4,6 @@ import React, { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import {
   ChevronDown,
   ChevronRight,
   Package,
@@ -170,28 +165,29 @@ export default function FAQPage() {
                   const isOpen = openItems.includes(itemId)
 
                   return (
-                    <Collapsible key={index} open={isOpen} onOpenChange={() => toggleItem(itemId)}>
-                      <CollapsibleTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-between text-left p-4 h-auto border border-border hover:bg-muted/50"
-                        >
-                          <span className="font-medium text-foreground">
-                            {faq.question}
-                          </span>
-                          {isOpen ? (
-                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                          )}
-                        </Button>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="px-4 pb-4">
-                        <p className="text-muted-foreground leading-relaxed">
-                          {faq.answer}
-                        </p>
-                      </CollapsibleContent>
-                    </Collapsible>
+                    <div key={index} className="border border-border rounded-lg overflow-hidden">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-between text-left p-4 h-auto hover:bg-muted/50"
+                        onClick={() => toggleItem(itemId)}
+                      >
+                        <span className="font-medium text-foreground">
+                          {faq.question}
+                        </span>
+                        {isOpen ? (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                      {isOpen && (
+                        <div className="px-4 pb-4">
+                          <p className="text-muted-foreground leading-relaxed">
+                            {faq.answer}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   )
                 })}
               </div>
