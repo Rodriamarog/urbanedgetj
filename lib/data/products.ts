@@ -8,9 +8,7 @@ export const products: Product[] = [
     slug: 'chaqueta-f1-ferrari-hombre',
     description: 'Chaqueta premium inspirada en la Fórmula 1 con diseño Ferrari auténtico. Confeccionada con materiales de alta calidad que combinan estilo urbano con la pasión por las carreras.',
     shortDescription: 'Chaqueta F1 premium con diseño Ferrari auténtico',
-    price: 2899,
-    originalPrice: 3499,
-    discountPercentage: 17,
+    price: 1999,
     category: 'hombre',
     subcategory: 'racing',
     images: [
@@ -88,9 +86,7 @@ export const products: Product[] = [
     slug: 'chaqueta-f1-ferrari-mujer',
     description: 'Chaqueta premium inspirada en la Fórmula 1 con diseño Ferrari auténtico. Confeccionada con materiales de alta calidad que combinan estilo urbano con la pasión por las carreras.',
     shortDescription: 'Chaqueta F1 premium con diseño Ferrari auténtico',
-    price: 2899,
-    originalPrice: 3499,
-    discountPercentage: 17,
+    price: 1999,
     category: 'mujer',
     subcategory: 'racing',
     images: [
@@ -168,9 +164,7 @@ export const products: Product[] = [
     slug: 'chaqueta-red-bull-racing-hombre',
     description: 'Chaqueta premium inspirada en el equipo Red Bull Racing de Fórmula 1. Diseño auténtico que combina la velocidad y la adrenalina del automovilismo con el estilo urbano más sofisticado.',
     shortDescription: 'Chaqueta Red Bull Racing premium auténtica',
-    price: 2799,
-    originalPrice: 3399,
-    discountPercentage: 18,
+    price: 1999,
     category: 'hombre',
     subcategory: 'racing',
     images: [
@@ -248,9 +242,7 @@ export const products: Product[] = [
     slug: 'chaqueta-red-bull-racing-mujer',
     description: 'Chaqueta premium inspirada en el equipo Red Bull Racing de Fórmula 1. Diseño auténtico que combina la velocidad y la adrenalina del automovilismo con el estilo urbano más sofisticado.',
     shortDescription: 'Chaqueta Red Bull Racing premium auténtica',
-    price: 2799,
-    originalPrice: 3399,
-    discountPercentage: 18,
+    price: 1999,
     category: 'mujer',
     subcategory: 'racing',
     images: [

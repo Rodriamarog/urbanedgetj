@@ -57,16 +57,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <span className="text-3xl font-bold text-foreground">
             ${product.price.toLocaleString()} MXN
           </span>
-          {product.originalPrice && (
-            <>
-              <span className="text-lg text-muted-foreground line-through">
-                ${product.originalPrice.toLocaleString()}
-              </span>
-              <Badge variant="destructive">
-                Ahorra ${(product.originalPrice - product.price).toLocaleString()}
-              </Badge>
-            </>
-          )}
         </div>
       </div>
 

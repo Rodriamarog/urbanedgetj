@@ -12,7 +12,6 @@ import {
   X,
   Home,
   Package,
-  Users,
   Mail
 } from "lucide-react"
 import { useCart } from "@/lib/context/CartContext"
@@ -20,7 +19,6 @@ import { useCart } from "@/lib/context/CartContext"
 const navigationItems = [
   { name: "Inicio", href: "/store", icon: Home },
   { name: "Productos", href: "/store/products", icon: Package },
-  { name: "Nosotros", href: "/store/about", icon: Users },
   { name: "Contacto", href: "/store/contact", icon: Mail },
 ]
 

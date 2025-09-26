@@ -51,11 +51,6 @@ export default function RelatedProducts({ relatedProducts, categoryName, categor
                   <span className="text-lg font-bold">
                     ${relatedProduct.price.toLocaleString()}
                   </span>
-                  {relatedProduct.originalPrice && (
-                    <span className="text-sm text-muted-foreground line-through">
-                      ${relatedProduct.originalPrice.toLocaleString()}
-                    </span>
-                  )}
                 </div>
               </div>
             </Link>

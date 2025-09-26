@@ -41,8 +41,6 @@ const socialLinks = [
 const quickLinks = [
   { name: "Política de Privacidad", href: "/store/privacy" },
   { name: "Términos y Condiciones", href: "/store/terms" },
-  { name: "Guía de Tallas", href: "/store/size-guide" },
-  { name: "Envíos y Devoluciones", href: "/store/shipping" },
   { name: "FAQ", href: "/store/faq" },
 ]
 
@@ -147,8 +145,8 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
-                <a href="mailto:hola@urbanedgetj.com" className="hover:text-foreground transition-colors">
-                  hola@urbanedgetj.com
+                <a href="mailto:urbanedgetj@gmail.com" className="hover:text-foreground transition-colors">
+                  urbanedgetj@gmail.com
                 </a>
               </div>
               <div className="flex items-center space-x-2">

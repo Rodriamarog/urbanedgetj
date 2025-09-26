@@ -21,8 +21,7 @@ const products = [
   {
     id: "ferrari-jacket-male",
     name: "Chaqueta F1 Ferrari",
-    price: "2,899",
-    originalPrice: "3,499",
+    price: "1,999",
     image: "/male-model-1.png",
     productImage: "/ferrari-black-front.png",
     category: "Hombre",
@@ -31,8 +30,7 @@ const products = [
   {
     id: "ferrari-jacket-female",
     name: "Chaqueta F1 Ferrari",
-    price: "2,899",
-    originalPrice: "3,499",
+    price: "1,999",
     image: "/female-model-1.png",
     productImage: "/ferrari-black-front.png",
     category: "Mujer",
@@ -41,9 +39,8 @@ const products = [
   {
     id: "redbull-jacket-male",
     name: "Chaqueta Red Bull Racing",
-    price: "2,799",
-    originalPrice: "3,399",
-    image: "/redbull-male-1.png",
+    price: "1,999",
+    image: "/redbull/male/male-1.png",
     productImage: "/redbull-front.png",
     category: "Hombre",
     brand: "Red Bull"
@@ -51,9 +48,8 @@ const products = [
   {
     id: "redbull-jacket-female",
     name: "Chaqueta Red Bull Racing",
-    price: "2,799",
-    originalPrice: "3,399",
-    image: "/redbull-female-1.png",
+    price: "1,999",
+    image: "/redbull/female/female-1.png",
     productImage: "/redbull-front.png",
     category: "Mujer",
     brand: "Red Bull"
@@ -99,9 +95,6 @@ export default function StorePage() {
             {/* Left Content */}
             <div className="space-y-8">
               <div className="space-y-4">
-                <Badge variant="outline" className="w-fit border-primary text-primary">
-                  🔥 Streetwear Premium Mexicano
-                </Badge>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
                   URBAN EDGE
                   <span className="block text-primary">STREETWEAR</span>
@@ -121,17 +114,6 @@ export default function StorePage() {
                   <Link href="/store/products">
                     <ShoppingBag className="mr-2 h-5 w-5" />
                     Explorar Productos
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                  asChild
-                >
-                  <Link href="/store/about">
-                    Nuestra Historia
-                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
               </div>
@@ -174,7 +156,7 @@ export default function StorePage() {
                     </div>
                     <div>
                       <div className="font-semibold text-foreground">Chaqueta F1 Ferrari</div>
-                      <div className="text-sm text-muted-foreground">Desde $2,899 MXN</div>
+                      <div className="text-sm text-muted-foreground">Desde $1,999 MXN</div>
                     </div>
                   </div>
                 </div>
@@ -242,9 +224,6 @@ export default function StorePage() {
                   <div className="flex items-center space-x-2 mb-4">
                     <span className="text-2xl font-bold text-foreground">
                       ${product.price}
-                    </span>
-                    <span className="text-sm text-muted-foreground line-through">
-                      ${product.originalPrice}
                     </span>
                   </div>
 
