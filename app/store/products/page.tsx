@@ -12,12 +12,13 @@ import {
 } from "lucide-react"
 
 import { unifiedProducts as products } from "@/lib/data/unified-products"
+import { Product } from "@/lib/types/product"
 
-const ProductCard: React.FC<{ product: any }> = ({ product }) => {
+const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   // Get female model image for display
-  const femaleImage = product.images.find(img =>
+  const femaleImage = product.images.find((img: any) =>
     img.type === 'lifestyle' && img.gender === 'female'
-  ) || product.images.find(img => img.isPrimary) || product.images[0]
+  ) || product.images.find((img: any) => img.isPrimary) || product.images[0]
 
   return (
     <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300">
