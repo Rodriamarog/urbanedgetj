@@ -79,9 +79,21 @@ export const dehydrateCartItems = (cartItems: CartItem[]): CartStorage['items'] 
 
 // Calculate cart totals
 export const calculateCartTotals = (items: CartItem[], couponCode?: string) => {
-  const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  // For products with basePrice, use exact pricing; otherwise fallback to calculation
+  const itemsWithExactPricing = items.map(item => ({
+    ...item,
+    exactTotal: item.product.basePrice && item.product.ivaPercentage
+      ? item.product.price * item.quantity  // Use exact price (1999) per item
+      : item.price * item.quantity
+  }))
 
-  // Apply coupon discount
+  // Calculate subtotal using base price (before IVA)
+  const subtotal = items.reduce((sum, item) => {
+    const basePrice = item.product.basePrice || item.price
+    return sum + (basePrice * item.quantity)
+  }, 0)
+
+  // Apply coupon discount on subtotal (base price)
   let discount = 0
   if (couponCode && COUPON_CODES[couponCode as CouponCode]) {
     const coupon = COUPON_CODES[couponCode as CouponCode]
@@ -92,21 +104,35 @@ export const calculateCartTotals = (items: CartItem[], couponCode?: string) => {
 
   const discountedSubtotal = subtotal - discount
 
-  // Calculate tax (IVA 16%)
-  const tax = discountedSubtotal * TAX_RATE
+  // For exact pricing products, calculate tax as the difference between total and subtotal
+  const hasExactPricing = items.every(item => item.product.basePrice && item.product.ivaPercentage)
 
-  // Calculate shipping
+  let tax: number
+  let total: number
+
+  if (hasExactPricing && !couponCode) {
+    // Use exact total pricing - sum of all exact product prices
+    const exactItemsTotal = itemsWithExactPricing.reduce((sum, item) => sum + item.exactTotal, 0)
+    total = exactItemsTotal
+    tax = total - discountedSubtotal // Tax is the difference to reach exact total
+  } else {
+    // Fallback to calculation for discounted items or non-exact pricing
+    tax = discountedSubtotal * TAX_RATE
+    total = discountedSubtotal + tax
+  }
+
+  // Calculate shipping based on the subtotal before tax
   const shipping = discountedSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_COST
 
-  // Calculate total
-  const total = discountedSubtotal + tax + shipping
+  // Add shipping to final total
+  total += shipping
 
   return {
-    subtotal,
-    discount,
-    tax,
+    subtotal: Math.round(subtotal * 100) / 100, // Round to 2 decimal places
+    discount: Math.round(discount * 100) / 100,
+    tax: Math.round(tax * 100) / 100,
     shipping,
-    total: Math.max(0, total) // Ensure total is never negative
+    total: Math.round(total * 100) / 100 // Ensure exact pricing with proper rounding
   }
 }
 

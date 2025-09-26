@@ -19,40 +19,30 @@ import {
 
 const products = [
   {
-    id: "ferrari-jacket-male",
+    id: "ferrari-jacket",
+    slug: "chaqueta-f1-ferrari",
     name: "Chaqueta F1 Ferrari",
-    price: "1,999",
-    image: "/male-model-1.png",
-    productImage: "/ferrari-black-front.png",
-    category: "Hombre",
-    brand: "Ferrari"
-  },
-  {
-    id: "ferrari-jacket-female",
-    name: "Chaqueta F1 Ferrari",
-    price: "1,999",
-    image: "/female-model-1.png",
+    price: 1999,
+    basePrice: 1723.28,
+    ivaPercentage: 16,
+    image: "/ferrari/female/female-model-1.png",
     productImage: "/ferrari-black-front.png",
     category: "Mujer",
-    brand: "Ferrari"
+    brand: "Ferrari",
+    gender: "female"
   },
   {
-    id: "redbull-jacket-male",
+    id: "redbull-jacket",
+    slug: "chaqueta-red-bull-racing",
     name: "Chaqueta Red Bull Racing",
-    price: "1,999",
-    image: "/redbull/male/male-1.png",
-    productImage: "/redbull-front.png",
-    category: "Hombre",
-    brand: "Red Bull"
-  },
-  {
-    id: "redbull-jacket-female",
-    name: "Chaqueta Red Bull Racing",
-    price: "1,999",
+    price: 1999,
+    basePrice: 1723.28,
+    ivaPercentage: 16,
     image: "/redbull/female/female-1.png",
     productImage: "/redbull-front.png",
     category: "Mujer",
-    brand: "Red Bull"
+    brand: "Red Bull",
+    gender: "female"
   }
 ]
 
@@ -82,9 +72,7 @@ const brandValues = [
 export default function StorePage() {
   const [selectedCategory, setSelectedCategory] = useState<"Todos" | "Hombre" | "Mujer">("Todos")
 
-  const filteredProducts = selectedCategory === "Todos"
-    ? products
-    : products.filter(product => product.category === selectedCategory)
+  const filteredProducts = products
 
   return (
     <div className="min-h-screen">
@@ -156,7 +144,8 @@ export default function StorePage() {
                     </div>
                     <div>
                       <div className="font-semibold text-foreground">Chaqueta F1 Ferrari</div>
-                      <div className="text-sm text-muted-foreground">Desde $1,999 MXN</div>
+                      <div className="text-xs text-muted-foreground">$1,723 + IVA (16%)</div>
+                      <div className="text-sm font-medium text-foreground">Total: $1,999 MXN</div>
                     </div>
                   </div>
                 </div>
@@ -183,19 +172,6 @@ export default function StorePage() {
               Colección exclusiva de chaquetas F1 para hombre y mujer. Diseños Ferrari y Red Bull Racing.
             </p>
 
-            {/* Category Filter */}
-            <div className="flex justify-center gap-4 mb-8">
-              {["Todos", "Hombre", "Mujer"].map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(category as "Todos" | "Hombre" | "Mujer")}
-                  className="min-w-[100px]"
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -221,17 +197,20 @@ export default function StorePage() {
                   <h3 className="font-semibold text-lg text-foreground mb-2">
                     {product.name}
                   </h3>
-                  <div className="flex items-center space-x-2 mb-4">
-                    <span className="text-2xl font-bold text-foreground">
-                      ${product.price}
-                    </span>
+                  <div className="space-y-1 mb-4">
+                    <div className="text-xs text-muted-foreground">
+                      ${product.basePrice.toLocaleString()} + IVA ({product.ivaPercentage}%)
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">
+                      ${product.price.toLocaleString()} MXN
+                    </div>
                   </div>
 
                   <Button
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                     asChild
                   >
-                    <Link href={`/store/products/${product.id}`}>
+                    <Link href={`/store/products/${product.slug}?gender=female`}>
                       Ver Detalles
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>

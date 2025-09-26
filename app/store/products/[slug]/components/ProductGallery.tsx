@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,18 +19,46 @@ import { Product } from "@/lib/types/product"
 
 interface ProductGalleryProps {
   product: Product
+  selectedGender: 'male' | 'female'
 }
 
-export default function ProductGallery({ product }: ProductGalleryProps) {
+export default function ProductGallery({ product, selectedGender }: ProductGalleryProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isZoomOpen, setIsZoomOpen] = useState(false)
 
+  // Filter images based on selected gender
+  const getFilteredImages = () => {
+    // Get unisex images (product shots)
+    const unisexImages = product.images.filter(img => img.gender === 'unisex' || !img.gender)
+
+    // Get gender-specific lifestyle images
+    const genderImages = product.images.filter(img => img.gender === selectedGender)
+
+    // Combine: unisex first, then gender-specific
+    return [...unisexImages, ...genderImages]
+  }
+
+  const filteredImages = getFilteredImages()
+
+  // Reset current image index when gender changes
+  useEffect(() => {
+    setCurrentImageIndex(0)
+  }, [selectedGender])
+
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % product.images.length)
+    setCurrentImageIndex((prev) => (prev + 1) % filteredImages.length)
   }
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length)
+    setCurrentImageIndex((prev) => (prev - 1 + filteredImages.length) % filteredImages.length)
+  }
+
+  if (filteredImages.length === 0) {
+    return (
+      <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+        <p className="text-muted-foreground">No hay imágenes disponibles</p>
+      </div>
+    )
   }
 
   return (
@@ -38,15 +66,15 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
       {/* Main Image */}
       <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
         <Image
-          src={product.images[currentImageIndex]?.url}
-          alt={product.images[currentImageIndex]?.alt}
+          src={filteredImages[currentImageIndex]?.url}
+          alt={filteredImages[currentImageIndex]?.alt}
           fill
           className="object-cover"
           priority
         />
 
         {/* Navigation Buttons */}
-        {product.images.length > 1 && (
+        {filteredImages.length > 1 && (
           <>
             <Button
               variant="secondary"
@@ -79,11 +107,11 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
       </div>
 
       {/* Thumbnail Gallery */}
-      {product.images.length > 1 && (
+      {filteredImages.length > 1 && (
         <div className="grid grid-cols-4 gap-2">
-          {product.images.map((image, index) => (
+          {filteredImages.map((image, index) => (
             <button
-              key={image.id}
+              key={`${image.id}-${selectedGender}`}
               onClick={() => setCurrentImageIndex(index)}
               className={`relative aspect-square overflow-hidden rounded-md border-2 transition-colors ${
                 index === currentImageIndex
@@ -110,8 +138,8 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
           </DialogHeader>
           <div className="relative aspect-square">
             <Image
-              src={product.images[currentImageIndex]?.url}
-              alt={product.images[currentImageIndex]?.alt}
+              src={filteredImages[currentImageIndex]?.url}
+              alt={filteredImages[currentImageIndex]?.alt}
               fill
               className="object-contain"
             />

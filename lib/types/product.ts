@@ -5,9 +5,11 @@ export interface Product {
   description: string
   shortDescription: string
   price: number
+  basePrice?: number
+  ivaPercentage?: number
   originalPrice?: number
   discountPercentage?: number
-  category: ProductCategory
+  category?: string
   subcategory?: string
   images: ProductImage[]
   variants?: ProductVariant[]
@@ -36,6 +38,7 @@ export interface ProductImage {
   isPrimary?: boolean
   type: 'product' | 'lifestyle' | 'detail' | 'back' | 'side'
   order: number
+  gender?: 'male' | 'female' | 'unisex'
 }
 
 export interface ProductVariant {
@@ -63,6 +66,7 @@ export interface ProductSize {
   }
   inStock: boolean
   stockQuantity?: number
+  gender?: 'male' | 'female' | 'unisex'
 }
 
 export interface ProductColor {

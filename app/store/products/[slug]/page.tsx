@@ -1,7 +1,7 @@
 import React from "react"
 import { notFound } from "next/navigation"
 
-import { getProductBySlug, getRelatedProducts } from "@/lib/data/products"
+import { getUnifiedProductBySlug, getRelatedUnifiedProducts } from "@/lib/data/unified-products"
 import { PRODUCT_CATEGORIES } from "@/lib/types/product"
 import ProductPageClient from "./components/ProductPageClient"
 import ProductInfo from "./components/ProductInfo"
@@ -23,7 +23,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   console.log('🔍 ProductPage rendering with params:', params)
   console.log('🔍 Looking for slug:', params.slug)
 
-  const product = getProductBySlug(params.slug)
+  const product = getUnifiedProductBySlug(params.slug)
   console.log('🔍 Product found:', product ? 'YES' : 'NO')
   console.log('🔍 Product data:', product ? { id: product.id, name: product.name, slug: product.slug } : 'null')
 
@@ -32,8 +32,8 @@ export default function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  const relatedProducts = getRelatedProducts(product.id, product.category)
-  const categoryName = PRODUCT_CATEGORIES.find(cat => cat.id === product.category)?.name
+  const relatedProducts = getRelatedUnifiedProducts(product.id)
+  const categoryName = product.category
 
   console.log('🔍 Related products:', relatedProducts.length)
   console.log('🔍 Category name:', categoryName)
@@ -55,7 +55,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         <RelatedProducts
           relatedProducts={relatedProducts}
           categoryName={categoryName}
-          categoryId={product.category}
+          categoryId={product.category || 'racing'}
         />
       </div>
     )

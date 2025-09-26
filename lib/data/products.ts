@@ -9,6 +9,8 @@ export const products: Product[] = [
     description: 'Chaqueta premium inspirada en la Fórmula 1 con diseño Ferrari auténtico. Confeccionada con materiales de alta calidad que combinan estilo urbano con la pasión por las carreras.',
     shortDescription: 'Chaqueta F1 premium con diseño Ferrari auténtico',
     price: 1999,
+    basePrice: 1723.28,
+    ivaPercentage: 16,
     category: 'hombre',
     subcategory: 'racing',
     images: [
@@ -87,6 +89,8 @@ export const products: Product[] = [
     description: 'Chaqueta premium inspirada en la Fórmula 1 con diseño Ferrari auténtico. Confeccionada con materiales de alta calidad que combinan estilo urbano con la pasión por las carreras.',
     shortDescription: 'Chaqueta F1 premium con diseño Ferrari auténtico',
     price: 1999,
+    basePrice: 1723.28,
+    ivaPercentage: 16,
     category: 'mujer',
     subcategory: 'racing',
     images: [
@@ -165,6 +169,8 @@ export const products: Product[] = [
     description: 'Chaqueta premium inspirada en el equipo Red Bull Racing de Fórmula 1. Diseño auténtico que combina la velocidad y la adrenalina del automovilismo con el estilo urbano más sofisticado.',
     shortDescription: 'Chaqueta Red Bull Racing premium auténtica',
     price: 1999,
+    basePrice: 1723.28,
+    ivaPercentage: 16,
     category: 'hombre',
     subcategory: 'racing',
     images: [
@@ -243,6 +249,8 @@ export const products: Product[] = [
     description: 'Chaqueta premium inspirada en el equipo Red Bull Racing de Fórmula 1. Diseño auténtico que combina la velocidad y la adrenalina del automovilismo con el estilo urbano más sofisticado.',
     shortDescription: 'Chaqueta Red Bull Racing premium auténtica',
     price: 1999,
+    basePrice: 1723.28,
+    ivaPercentage: 16,
     category: 'mujer',
     subcategory: 'racing',
     images: [
