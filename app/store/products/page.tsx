@@ -33,7 +33,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-2 md:p-6">
         <div className="mb-2">
           <Badge variant="outline" className="text-xs mb-2">
             Para Mujer
@@ -48,7 +48,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           {product.shortDescription}
         </p>
 
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4">
           <div className="text-2xl font-bold text-foreground">
             ${product.price.toLocaleString()} MXN
           </div>
@@ -70,7 +70,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
 
 export default function ProductsPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-1 py-4 md:px-4 md:py-8">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center mb-4">
@@ -89,7 +89,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-1 w-full md:gap-4">
         {products.map((product) => (
           <ProductCard
             key={product.id}

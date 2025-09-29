@@ -68,11 +68,10 @@ export function Header() {
             asChild
           >
             <Link href="/store/cart">
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCart className="h-5 w-5" data-cart-icon />
               {cartItemCount > 0 && (
                 <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
+                  className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-green-500 hover:bg-green-600 text-white border-green-500"
                 >
                   {cartItemCount}
                 </Badge>
@@ -135,7 +134,7 @@ export function Header() {
                     <ShoppingCart className="h-5 w-5" />
                     <span>Carrito</span>
                     {cartItemCount > 0 && (
-                      <Badge variant="destructive" className="ml-auto">
+                      <Badge className="ml-auto bg-green-500 hover:bg-green-600 text-white border-green-500">
                         {cartItemCount}
                       </Badge>
                     )}

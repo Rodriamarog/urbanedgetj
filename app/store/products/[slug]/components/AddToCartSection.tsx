@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart } from "lucide-react"
 
 import { Product } from "@/lib/types/product"
 import { useCart } from "@/lib/context/CartContext"
+import { useCartAnimation, CartAnimation } from "../../../components/CartAnimation"
 
 interface AddToCartSectionProps {
   product: Product
@@ -16,13 +17,14 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
   const { addItem, getItemQuantity } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const { isAnimating, startPosition, targetPosition, triggerAnimation, handleAnimationComplete } = useCartAnimation()
 
   // Get current quantity in cart for this product/size combination
   const currentCartQuantity = selectedSize ? getItemQuantity(product.id, selectedSize) : 0
 
   const handleAddToCart = async () => {
     if (!selectedSize) {
-      alert('Por favor selecciona una talla')
       return
     }
 
@@ -30,14 +32,16 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
     try {
       addItem(product, selectedSize, quantity)
 
-      // Show success feedback
-      alert(`✅ ${product.name} agregado al carrito!\nTalla: ${selectedSize.toUpperCase()}\nCantidad: ${quantity}`)
+      // Trigger cart animation
+      const cartIcon = document.querySelector('[data-cart-icon]') as HTMLElement
+      if (buttonRef.current && cartIcon) {
+        triggerAnimation(buttonRef.current, cartIcon)
+      }
 
       // Reset quantity to 1 after adding
       setQuantity(1)
     } catch (error) {
       console.error('Error adding to cart:', error)
-      alert('Error al agregar al carrito. Por favor intenta de nuevo.')
     } finally {
       setIsAddingToCart(false)
     }
@@ -96,6 +100,7 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
 
       {/* Add to Cart Button */}
       <Button
+        ref={buttonRef}
         size="lg"
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
         onClick={handleAddToCart}
@@ -104,6 +109,14 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
         <ShoppingCart className="w-5 h-5 mr-2" />
         {isAddingToCart ? "Agregando..." : "Agregar al Carrito"}
       </Button>
+
+      {/* Cart Animation */}
+      <CartAnimation
+        isAnimating={isAnimating}
+        startPosition={startPosition}
+        targetPosition={targetPosition}
+        onComplete={handleAnimationComplete}
+      />
     </div>
   )
 }

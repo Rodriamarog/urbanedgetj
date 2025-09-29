@@ -144,8 +144,7 @@ export default function StorePage() {
                     </div>
                     <div>
                       <div className="font-semibold text-foreground">Chaqueta F1 Ferrari</div>
-                      <div className="text-xs text-muted-foreground">$1,723 + IVA (16%)</div>
-                      <div className="text-sm font-medium text-foreground">Total: $1,999 MXN</div>
+                      <div className="text-lg font-bold text-foreground">$1,999 MXN</div>
                     </div>
                   </div>
                 </div>
@@ -174,21 +173,22 @@ export default function StorePage() {
 
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 gap-1 w-full px-1 md:gap-4 md:px-4">
             {filteredProducts.map((product) => (
               <Card key={product.id} className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300">
                 <div className="relative overflow-hidden">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    width={400}
-                    height={500}
-                    className="w-full h-80 object-contain bg-muted group-hover:scale-105 transition-transform duration-300"
-                  />
+                  <div className="aspect-square relative">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                 </div>
 
-                <div className="p-6">
+                <div className="p-3 md:p-6">
                   <div className="mb-2">
                     <Badge variant="outline" className="text-xs">
                       {product.category}
@@ -197,10 +197,7 @@ export default function StorePage() {
                   <h3 className="font-semibold text-lg text-foreground mb-2">
                     {product.name}
                   </h3>
-                  <div className="space-y-1 mb-4">
-                    <div className="text-xs text-muted-foreground">
-                      ${product.basePrice.toLocaleString()} + IVA ({product.ivaPercentage}%)
-                    </div>
+                  <div className="mb-4">
                     <div className="text-2xl font-bold text-foreground">
                       ${product.price.toLocaleString()} MXN
                     </div>

@@ -76,11 +76,6 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       // Validate stock
       const stockValidation = validateCartItemStock(product, size, quantity)
       if (!stockValidation.valid) {
-        toast({
-          title: "Error de inventario",
-          description: stockValidation.message,
-          variant: "destructive"
-        })
         return state
       }
 
@@ -95,11 +90,6 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         const newStockValidation = validateCartItemStock(product, size, newQuantity)
 
         if (!newStockValidation.valid) {
-          toast({
-            title: "Error de inventario",
-            description: newStockValidation.message,
-            variant: "destructive"
-          })
           return state
         }
 
@@ -126,12 +116,6 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 
       const itemCount = getCartItemCount(newItems)
       const totals = calculateCartTotals(newItems, state.couponCode)
-
-      // Show success notification
-      toast({
-        title: "Producto agregado",
-        description: `${product.name} (${size.toUpperCase()}) agregado al carrito`,
-      })
 
       return {
         ...state,
@@ -169,11 +153,6 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           // Validate stock for new quantity
           const stockValidation = validateCartItemStock(item.product, item.size, quantity)
           if (!stockValidation.valid) {
-            toast({
-              title: "Error de inventario",
-              description: stockValidation.message,
-              variant: "destructive"
-            })
             return item // Keep original quantity
           }
           return { ...item, quantity, addedAt: new Date().toISOString() }
@@ -197,21 +176,10 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       const couponCode = action.payload.toUpperCase()
 
       if (!isValidCouponCode(couponCode)) {
-        toast({
-          title: "Código inválido",
-          description: "El código de descuento ingresado no es válido.",
-          variant: "destructive"
-        })
         return state
       }
 
       const totals = calculateCartTotals(state.items, couponCode)
-
-      // Show success notification
-      toast({
-        title: "Cupón aplicado",
-        description: `Código ${couponCode} aplicado con éxito. Descuento: $${totals.discount.toLocaleString()} MXN`,
-      })
 
       return {
         ...state,
