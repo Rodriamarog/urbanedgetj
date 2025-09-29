@@ -175,28 +175,25 @@ export default function StorePage() {
 
           <div className="grid grid-cols-2 gap-1 w-full px-1 md:gap-4 md:px-4">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300">
+              <Card key={product.id} className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0">
                 <div className="relative overflow-hidden">
-                  <div className="aspect-square relative">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    width={400}
+                    height={500}
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                 </div>
 
                 <div className="p-3 md:p-6">
-                  <div className="mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      {product.category}
-                    </Badge>
-                  </div>
                   <h3 className="font-semibold text-lg text-foreground mb-2">
                     {product.name}
                   </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Chaqueta F1 premium con diseño auténtico
+                  </p>
                   <div className="mb-4">
                     <div className="text-2xl font-bold text-foreground">
                       ${product.price.toLocaleString()} MXN

@@ -21,7 +21,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   ) || product.images.find((img: any) => img.isPrimary) || product.images[0]
 
   return (
-    <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300">
+    <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0">
       <div className="relative overflow-hidden">
         <div className="aspect-square relative">
           <Image
@@ -34,12 +34,6 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
       </div>
 
       <div className="p-2 md:p-6">
-        <div className="mb-2">
-          <Badge variant="outline" className="text-xs mb-2">
-            Para Mujer
-          </Badge>
-        </div>
-
         <h3 className="font-semibold text-lg text-foreground mb-2">
           {product.name}
         </h3>
