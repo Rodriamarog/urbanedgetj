@@ -8,7 +8,7 @@ import { Product } from "@/lib/types/product"
 import ProductGallery from "./ProductGallery"
 import SizeSelector from "./SizeSelector"
 import AddToCartSection from "./AddToCartSection"
-import WishlistButton from "./WishlistButton"
+import ProceedToCheckoutButton from "./ProceedToCheckoutButton"
 import ShareButton from "./ShareButton"
 
 interface ProductPageClientProps {
@@ -72,16 +72,17 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
           onSizeChange={setSelectedSize}
         />
 
-        {/* Add to Cart Section */}
-        <AddToCartSection
-          product={product}
-          selectedSize={selectedSize}
-        />
+        {/* Add to Cart and Action Buttons */}
+        <div className="space-y-3">
+          <AddToCartSection
+            product={product}
+            selectedSize={selectedSize}
+          />
 
-        {/* Action Buttons */}
-        <div className="flex space-x-3">
-          <WishlistButton productId={product.id} />
-          <ShareButton product={product} />
+          <div className="flex space-x-3">
+            <ProceedToCheckoutButton product={product} selectedSize={selectedSize} />
+            <ShareButton product={product} />
+          </div>
         </div>
       </div>
     </div>

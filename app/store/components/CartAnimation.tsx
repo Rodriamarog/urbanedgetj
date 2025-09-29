@@ -23,7 +23,7 @@ export const CartAnimation: React.FC<CartAnimationProps> = ({
     if (isAnimating) {
       setAnimationKey(prev => prev + 1)
     }
-  }, [isAnimating])
+  }, [isAnimating, startPosition, targetPosition])
 
   if (!isAnimating || !startPosition || !targetPosition) {
     return null
@@ -34,15 +34,19 @@ export const CartAnimation: React.FC<CartAnimationProps> = ({
       <motion.div
         key={animationKey}
         className="fixed z-[9999] pointer-events-none"
+        style={{
+          left: 0,
+          top: 0,
+        }}
         initial={{
-          x: startPosition.x,
-          y: startPosition.y,
-          scale: 1,
+          x: startPosition.x - 32, // Center the 64px element
+          y: startPosition.y - 32,
+          scale: 0.8,
           opacity: 1
         }}
         animate={{
-          x: targetPosition.x,
-          y: targetPosition.y,
+          x: targetPosition.x - 32,
+          y: targetPosition.y - 32,
           scale: 0.3,
           opacity: 0.8
         }}
@@ -51,13 +55,13 @@ export const CartAnimation: React.FC<CartAnimationProps> = ({
           opacity: 0
         }}
         transition={{
-          duration: 0.8,
-          ease: "easeInOut"
+          duration: 1.2,
+          ease: [0.25, 0.46, 0.45, 0.94]
         }}
         onAnimationComplete={onComplete}
       >
-        <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-          <ShoppingCart className="w-6 h-6 text-white" />
+        <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-2xl border-4 border-white animate-pulse">
+          <ShoppingCart className="w-8 h-8 text-white drop-shadow-lg" />
         </div>
       </motion.div>
     </AnimatePresence>

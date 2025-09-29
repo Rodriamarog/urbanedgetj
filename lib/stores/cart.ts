@@ -10,6 +10,7 @@ import {
 } from '@/lib/types/cart'
 import { Product } from '@/lib/types/product'
 import { getProductBySlug, products } from '@/lib/data/products'
+import { unifiedProducts } from '@/lib/data/unified-products'
 
 const CART_STORAGE_KEY = 'urbanedgetj_cart'
 
@@ -41,22 +42,46 @@ export const clearCartFromStorage = (): void => {
   localStorage.removeItem(CART_STORAGE_KEY)
 }
 
+// Legacy to unified product ID mapping
+const LEGACY_PRODUCT_MAPPING: Record<string, string> = {
+  'ferrari-jacket-male': 'ferrari-jacket',
+  'ferrari-jacket-female': 'ferrari-jacket',
+  'redbull-jacket-male': 'redbull-jacket',
+  'redbull-jacket-female': 'redbull-jacket'
+}
+
 // Helper to convert storage format to cart format
 export const hydrateCartItems = (storageItems: CartStorage['items']): CartItem[] => {
   return storageItems.map(item => {
-    // Find the product by ID - first try by ID, then by slug as fallback
-    let product = products.find(p => p.id === item.productId)
+    let productId = item.productId
+
+    // Check if this is a legacy product ID that needs mapping
+    if (LEGACY_PRODUCT_MAPPING[productId]) {
+      productId = LEGACY_PRODUCT_MAPPING[productId]
+      console.log(`🛒 Migrating legacy product ID: ${item.productId} → ${productId}`)
+    }
+
+    // Find the product by ID - try unified products first, then legacy products
+    let product = unifiedProducts.find(p => p.id === productId)
+
     if (!product) {
-      product = getProductBySlug(item.productId) // Fallback to slug lookup
+      product = products.find(p => p.id === productId)
     }
 
     if (!product) {
-      console.warn(`Product not found for cart item: ${item.productId}`)
+      product = getProductBySlug(productId) // Fallback to slug lookup
+    }
+
+    if (!product) {
+      console.warn(`Product not found for cart item: ${item.productId} (mapped to: ${productId})`)
+      console.warn(`Available unified products:`, unifiedProducts.map(p => p.id))
+      console.warn(`Available legacy products:`, products.map(p => p.id))
       return null
     }
 
     return {
       ...item,
+      productId, // Use the mapped product ID
       product,
       addedAt: item.addedAt
     }

@@ -25,6 +25,7 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
 
   const handleAddToCart = async () => {
     if (!selectedSize) {
+      alert('Por favor elige una talla antes de agregar al carrito')
       return
     }
 
@@ -33,9 +34,25 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
       addItem(product, selectedSize, quantity)
 
       // Trigger cart animation
-      const cartIcon = document.querySelector('[data-cart-icon]') as HTMLElement
+      let cartIcon = document.querySelector('[data-cart-icon]') as HTMLElement
+
+      // Fallback: try to find any cart icon if the main one isn't visible
+      if (!cartIcon || cartIcon.offsetParent === null) {
+        cartIcon = document.querySelector('[href="/store/cart"]') as HTMLElement
+      }
+
       if (buttonRef.current && cartIcon) {
         triggerAnimation(buttonRef.current, cartIcon)
+      } else {
+        // Fallback: show a simple visual feedback
+        if (buttonRef.current) {
+          buttonRef.current.style.transform = 'scale(0.95)'
+          setTimeout(() => {
+            if (buttonRef.current) {
+              buttonRef.current.style.transform = 'scale(1)'
+            }
+          }, 150)
+        }
       }
 
       // Reset quantity to 1 after adding
@@ -104,7 +121,7 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
         size="lg"
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
         onClick={handleAddToCart}
-        disabled={!product.inStock || !selectedSize || isAddingToCart}
+        disabled={!product.inStock || isAddingToCart}
       >
         <ShoppingCart className="w-5 h-5 mr-2" />
         {isAddingToCart ? "Agregando..." : "Agregar al Carrito"}

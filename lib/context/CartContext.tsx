@@ -237,6 +237,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Load cart from localStorage on mount
   useEffect(() => {
     const storedCart = getCartFromStorage()
+
     if (storedCart) {
       const hydratedItems = hydrateCartItems(storedCart.items)
       dispatch({ type: 'LOAD_CART', payload: hydratedItems })

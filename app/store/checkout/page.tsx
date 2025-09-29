@@ -523,7 +523,7 @@ export default function CheckoutPage() {
             {/* Checkout Button */}
             <Button
               size="lg"
-              className="w-full mb-4"
+              className="w-full mb-4 bg-yellow-500 hover:bg-yellow-600 text-black font-bold border-2 border-yellow-500 hover:border-yellow-600 shadow-lg hover:shadow-xl transition-all duration-200"
               onClick={handleCheckout}
               disabled={isProcessing}
             >

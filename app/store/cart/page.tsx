@@ -253,7 +253,7 @@ const CartSummary: React.FC = () => {
           <label className="text-sm font-medium">Código de Descuento</label>
           <div className="flex space-x-2">
             <Input
-              placeholder="Ej: URBANEDGE20"
+              placeholder="Código de descuento"
               value={couponCode}
               onChange={(e) => {
                 setCouponCode(e.target.value.toUpperCase())
@@ -272,7 +272,11 @@ const CartSummary: React.FC = () => {
       )}
 
       {/* Checkout Button */}
-      <Button size="lg" className="w-full mb-4" asChild>
+      <Button
+        size="lg"
+        className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200"
+        asChild
+      >
         <Link href="/store/checkout">
           <CreditCard className="w-5 h-5 mr-2" />
           Proceder al Checkout
