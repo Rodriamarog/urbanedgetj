@@ -155,15 +155,8 @@ const CartItemCard: React.FC<{ item: CartItem }> = ({ item }) => {
                   </span>
                 )}
               </div>
-              <div className="text-xs text-muted-foreground space-y-0.5">
-                {item.product.basePrice && item.product.ivaPercentage ? (
-                  <>
-                    <div>${item.product.basePrice.toLocaleString()} + IVA ({item.product.ivaPercentage}%) c/u</div>
-                    <div>Total: ${item.price.toLocaleString()} c/u</div>
-                  </>
-                ) : (
-                  <div>${item.price.toLocaleString()} c/u</div>
-                )}
+              <div className="text-xs text-muted-foreground">
+                <div>${item.price.toLocaleString()} c/u</div>
               </div>
             </div>
           </div>
