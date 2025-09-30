@@ -137,14 +137,14 @@ export default function StorePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
 
                 {/* Floating Price Card */}
-                <div className="absolute bottom-6 left-6 bg-background/95 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                      <Crown className="h-6 w-6 text-primary-foreground" />
+                <div className="absolute bottom-3 left-3 md:bottom-6 md:left-6 bg-background/90 backdrop-blur-sm rounded-md md:rounded-lg p-2 md:p-4 shadow-lg max-w-[160px] md:max-w-none">
+                  <div className="flex items-center space-x-2 md:space-x-3">
+                    <div className="w-6 h-6 md:w-12 md:h-12 bg-primary rounded md:rounded-lg flex items-center justify-center">
+                      <Crown className="h-3 w-3 md:h-6 md:w-6 text-primary-foreground" />
                     </div>
-                    <div>
-                      <div className="font-semibold text-foreground">Chaqueta F1 Ferrari</div>
-                      <div className="text-lg font-bold text-foreground">$1,999 MXN</div>
+                    <div className="min-w-0">
+                      <div className="font-semibold text-foreground text-xs md:text-base truncate">Chaqueta F1 Ferrari</div>
+                      <div className="text-sm md:text-lg font-bold text-foreground">$1,999</div>
                     </div>
                   </div>
                 </div>
@@ -175,7 +175,7 @@ export default function StorePage() {
 
           <div className="grid grid-cols-2 gap-1 w-full px-1 md:gap-4 md:px-4">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0">
+              <Card key={product.id} className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0 flex flex-col h-full">
                 <div className="relative overflow-hidden">
                   <Image
                     src={product.image}
@@ -187,28 +187,36 @@ export default function StorePage() {
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                 </div>
 
-                <div className="p-3 md:p-6">
-                  <h3 className="font-semibold text-lg text-foreground mb-2">
+                <div className="p-3 md:p-6 flex flex-col flex-1">
+                  {/* Title - Fixed height for up to 2 lines */}
+                  <h3 className="font-semibold text-lg text-foreground mb-2 min-h-[3.5rem] flex items-start leading-tight">
                     {product.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+
+                  {/* Description - Fixed height */}
+                  <p className="text-sm text-muted-foreground mb-4 min-h-[2.5rem] flex items-start leading-tight">
                     Chaqueta F1 premium con diseño auténtico
                   </p>
-                  <div className="mb-4">
+
+                  {/* Price - Fixed height */}
+                  <div className="mb-4 min-h-[2rem] flex items-center">
                     <div className="text-2xl font-bold text-foreground">
                       ${product.price.toLocaleString()} MXN
                     </div>
                   </div>
 
-                  <Button
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                    asChild
-                  >
-                    <Link href={`/store/products/${product.slug}?gender=female`}>
-                      Ver Detalles
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                  {/* Button - Pushed to bottom */}
+                  <div className="mt-auto">
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                      asChild
+                    >
+                      <Link href={`/store/products/${product.slug}?gender=female`}>
+                        Ver Detalles
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
@@ -259,45 +267,6 @@ export default function StorePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-r from-primary to-primary/80 rounded-2xl p-8 md:p-12 text-center text-primary-foreground">
-            <div className="max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Únete a la Revolución Streetwear
-              </h2>
-              <p className="text-lg md:text-xl opacity-90 mb-8">
-                Sé parte de la comunidad Urban Edge TJ y recibe acceso exclusivo a nuevos lanzamientos,
-                ofertas especiales y contenido premium.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="bg-background text-foreground hover:bg-background/90"
-                  asChild
-                >
-                  <Link href="/store/products">
-                    <Zap className="mr-2 h-5 w-5" />
-                    Comprar Ahora
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                  asChild
-                >
-                  <Link href="/">
-                    Lista de Espera F1
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
