@@ -8,13 +8,6 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -42,6 +35,7 @@ import {
 
 import { useCart } from "@/lib/context/CartContext"
 import { CartItem } from "@/lib/types/cart"
+import { PRODUCT_CATEGORIES } from "@/lib/types/product"
 
 const CartItemCard: React.FC<{ item: CartItem }> = ({ item }) => {
   const { updateQuantity, removeItem } = useCart()
