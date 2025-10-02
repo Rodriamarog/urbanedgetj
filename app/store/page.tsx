@@ -113,12 +113,12 @@ export default function StorePage() {
                   <div className="text-sm text-muted-foreground">Clientes</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-foreground">500+</div>
-                  <div className="text-sm text-muted-foreground">Productos</div>
-                </div>
-                <div className="text-center">
                   <div className="text-2xl font-bold text-foreground">4.8★</div>
                   <div className="text-sm text-muted-foreground">Rating</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-foreground">🇲🇽</div>
+                  <div className="text-sm text-muted-foreground">Envío Gratis</div>
                 </div>
               </div>
             </div>

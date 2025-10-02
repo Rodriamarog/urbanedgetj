@@ -12,13 +12,15 @@ import {
   X,
   Home,
   Package,
-  Mail
+  Mail,
+  Truck
 } from "lucide-react"
 import { useCart } from "@/lib/context/CartContext"
 
 const navigationItems = [
   { name: "Inicio", href: "/store", icon: Home },
   { name: "Productos", href: "/store/products", icon: Package },
+  { name: "Rastrear Pedido", href: "/store/tracking", icon: Truck },
   { name: "Contacto", href: "/store/contact", icon: Mail },
 ]
 

@@ -39,6 +39,7 @@ const socialLinks = [
 ]
 
 const quickLinks = [
+  { name: "Rastrea tu Pedido", href: "/store/tracking" },
   { name: "Política de Privacidad", href: "/store/privacy" },
   { name: "Términos y Condiciones", href: "/store/terms" },
   { name: "FAQ", href: "/store/faq" },
