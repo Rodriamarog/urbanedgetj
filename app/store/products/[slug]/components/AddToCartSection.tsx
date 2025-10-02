@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart } from "lucide-react"
 
@@ -14,6 +15,7 @@ interface AddToCartSectionProps {
 }
 
 export default function AddToCartSection({ product, selectedSize }: AddToCartSectionProps) {
+  const router = useRouter()
   const { addItem, getItemQuantity } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
@@ -57,6 +59,9 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
 
       // Reset quantity to 1 after adding
       setQuantity(1)
+
+      // Redirect to cart page
+      router.push('/store/cart')
     } catch (error) {
       console.error('Error adding to cart:', error)
     } finally {

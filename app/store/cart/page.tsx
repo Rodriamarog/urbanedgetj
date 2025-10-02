@@ -5,7 +5,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -32,25 +31,20 @@ import {
   Plus,
   Trash2,
   ArrowLeft,
-  ArrowRight,
   Package,
   Truck,
   Shield,
   Tag,
   CreditCard,
   ShoppingBag,
-  Heart,
   Home
 } from "lucide-react"
 
 import { useCart } from "@/lib/context/CartContext"
 import { CartItem } from "@/lib/types/cart"
-import { PRODUCT_CATEGORIES } from "@/lib/types/product"
 
 const CartItemCard: React.FC<{ item: CartItem }> = ({ item }) => {
   const { updateQuantity, removeItem } = useCart()
-
-  const categoryName = PRODUCT_CATEGORIES.find(cat => cat.id === item.product.category)?.name
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -66,23 +60,45 @@ const CartItemCard: React.FC<{ item: CartItem }> = ({ item }) => {
   return (
     <Card className="p-6">
       <div className="flex gap-4">
-        {/* Product Image */}
-        <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
-          <Image
-            src={item.product.images[0]?.url}
-            alt={item.product.images[0]?.alt}
-            fill
-            className="object-cover rounded-lg"
-          />
+        {/* Product Image and Quantity Controls */}
+        <div className="flex flex-col gap-3">
+          <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+            <Image
+              src={item.product.images[0]?.url}
+              alt={item.product.images[0]?.alt}
+              fill
+              className="object-cover rounded-lg"
+            />
+          </div>
+
+          {/* Quantity Controls */}
+          <div className="flex items-center justify-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleQuantityChange(item.quantity - 1)}
+              disabled={item.quantity <= 1}
+            >
+              <Minus className="w-3 h-3" />
+            </Button>
+
+            <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleQuantityChange(item.quantity + 1)}
+              disabled={item.quantity >= 10}
+            >
+              <Plus className="w-3 h-3" />
+            </Button>
+          </div>
         </div>
 
         {/* Product Info */}
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start mb-2">
             <div className="flex-1">
-              <Badge variant="outline" className="text-xs mb-1">
-                {categoryName}
-              </Badge>
               <h3 className="font-semibold text-lg text-foreground mb-1">
                 <Link
                   href={`/store/products/${item.product.slug}`}
@@ -120,44 +136,20 @@ const CartItemCard: React.FC<{ item: CartItem }> = ({ item }) => {
             </AlertDialog>
           </div>
 
-          {/* Quantity and Price */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuantityChange(item.quantity - 1)}
-                disabled={item.quantity <= 1}
-              >
-                <Minus className="w-3 h-3" />
-              </Button>
-
-              <span className="w-12 text-center font-medium">{item.quantity}</span>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuantityChange(item.quantity + 1)}
-                disabled={item.quantity >= 10}
-              >
-                <Plus className="w-3 h-3" />
-              </Button>
-            </div>
-
-            <div className="text-right">
-              <div className="flex items-center space-x-2">
-                <span className="text-lg font-bold">
-                  ${itemTotal.toLocaleString()} MXN
+          {/* Price */}
+          <div className="text-right">
+            <div className="flex items-center justify-end space-x-2">
+              <span className="text-lg font-bold">
+                ${itemTotal.toLocaleString()} MXN
+              </span>
+              {originalItemTotal && originalItemTotal > itemTotal && (
+                <span className="text-sm text-muted-foreground line-through">
+                  ${originalItemTotal.toLocaleString()}
                 </span>
-                {originalItemTotal && originalItemTotal > itemTotal && (
-                  <span className="text-sm text-muted-foreground line-through">
-                    ${originalItemTotal.toLocaleString()}
-                  </span>
-                )}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                <div>${item.price.toLocaleString()} c/u</div>
-              </div>
+              )}
+            </div>
+            <div className="text-xs text-muted-foreground text-right">
+              <div>${item.price.toLocaleString()} c/u</div>
             </div>
           </div>
         </div>
@@ -402,16 +394,6 @@ export default function CartPage() {
               {state.items.map((item) => (
                 <CartItemCard key={item.id} item={item} />
               ))}
-            </div>
-
-            {/* Continue Shopping */}
-            <div className="mt-8 text-center">
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/store/products">
-                  <ArrowLeft className="w-5 h-5 mr-2" />
-                  Continuar Comprando
-                </Link>
-              </Button>
             </div>
           </div>
 

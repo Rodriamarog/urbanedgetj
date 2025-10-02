@@ -175,50 +175,49 @@ export default function StorePage() {
 
           <div className="grid grid-cols-2 gap-1 w-full px-1 md:gap-4 md:px-4">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0 flex flex-col h-full">
-                <div className="relative overflow-hidden">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    width={400}
-                    height={500}
-                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-                </div>
-
-                <div className="p-3 md:p-6 flex flex-col flex-1">
-                  {/* Title - Fixed height for up to 2 lines */}
-                  <h3 className="font-semibold text-lg text-foreground mb-2 min-h-[3.5rem] flex items-start leading-tight">
-                    {product.name}
-                  </h3>
-
-                  {/* Description - Fixed height */}
-                  <p className="text-sm text-muted-foreground mb-4 min-h-[2.5rem] flex items-start leading-tight">
-                    Chaqueta F1 premium con diseño auténtico
-                  </p>
-
-                  {/* Price - Fixed height */}
-                  <div className="mb-4 min-h-[2rem] flex items-center">
-                    <div className="text-2xl font-bold text-foreground">
-                      ${product.price.toLocaleString()} MXN
-                    </div>
+              <Link key={product.id} href={`/store/products/${product.slug}?gender=female`} className="block h-full">
+                <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0 flex flex-col h-full cursor-pointer">
+                  <div className="relative overflow-hidden">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      width={400}
+                      height={500}
+                      className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                   </div>
 
-                  {/* Button - Pushed to bottom */}
-                  <div className="mt-auto">
-                    <Button
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                      asChild
-                    >
-                      <Link href={`/store/products/${product.slug}?gender=female`}>
+                  <div className="p-3 md:p-6 flex flex-col flex-1">
+                    {/* Title - Fixed height for up to 2 lines */}
+                    <h3 className="font-semibold text-lg text-foreground mb-2 min-h-[3.5rem] flex items-start leading-tight">
+                      {product.name}
+                    </h3>
+
+                    {/* Description - Fixed height */}
+                    <p className="text-sm text-muted-foreground mb-4 min-h-[2.5rem] flex items-start leading-tight">
+                      Chaqueta F1 premium con diseño auténtico
+                    </p>
+
+                    {/* Price - Fixed height */}
+                    <div className="mb-4 min-h-[2rem] flex items-center">
+                      <div className="text-2xl font-bold text-foreground">
+                        ${product.price.toLocaleString()} MXN
+                      </div>
+                    </div>
+
+                    {/* Button - Pushed to bottom */}
+                    <div className="mt-auto">
+                      <Button
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground pointer-events-none"
+                      >
                         Ver Detalles
                         <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             ))}
           </div>
 

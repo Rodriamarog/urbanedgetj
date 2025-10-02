@@ -21,50 +21,49 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   ) || product.images.find((img: any) => img.isPrimary) || product.images[0]
 
   return (
-    <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0 flex flex-col h-full">
-      <div className="relative overflow-hidden">
-        <div className="aspect-square relative">
-          <Image
-            src={femaleImage?.url || ''}
-            alt={femaleImage?.alt || product.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      </div>
-
-      <div className="p-2 md:p-6 flex flex-col flex-1">
-        {/* Title - Fixed height for up to 2 lines */}
-        <h3 className="font-semibold text-lg text-foreground mb-2 min-h-[3.5rem] flex items-start leading-tight">
-          {product.name}
-        </h3>
-
-        {/* Description - Fixed height */}
-        <p className="text-sm text-muted-foreground mb-4 min-h-[2.5rem] flex items-start leading-tight">
-          {product.shortDescription}
-        </p>
-
-        {/* Price - Fixed height */}
-        <div className="mb-4 min-h-[2rem] flex items-center">
-          <div className="text-2xl font-bold text-foreground">
-            ${product.price.toLocaleString()} MXN
+    <Link href={`/store/products/${product.slug}?gender=female`} className="block h-full">
+      <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0 flex flex-col h-full cursor-pointer">
+        <div className="relative overflow-hidden">
+          <div className="aspect-square relative">
+            <Image
+              src={femaleImage?.url || ''}
+              alt={femaleImage?.alt || product.name}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
           </div>
         </div>
 
-        {/* Button - Pushed to bottom */}
-        <div className="mt-auto">
-          <Button
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-            asChild
-          >
-            <Link href={`/store/products/${product.slug}?gender=female`}>
+        <div className="p-2 md:p-6 flex flex-col flex-1">
+          {/* Title - Fixed height for up to 2 lines */}
+          <h3 className="font-semibold text-lg text-foreground mb-2 min-h-[3.5rem] flex items-start leading-tight">
+            {product.name}
+          </h3>
+
+          {/* Description - Fixed height */}
+          <p className="text-sm text-muted-foreground mb-4 min-h-[2.5rem] flex items-start leading-tight">
+            {product.shortDescription}
+          </p>
+
+          {/* Price - Fixed height */}
+          <div className="mb-4 min-h-[2rem] flex items-center">
+            <div className="text-2xl font-bold text-foreground">
+              ${product.price.toLocaleString()} MXN
+            </div>
+          </div>
+
+          {/* Button - Pushed to bottom */}
+          <div className="mt-auto">
+            <Button
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground pointer-events-none"
+            >
               Ver Detalles
               <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+            </Button>
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </Link>
   )
 }
 
