@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -19,9 +20,7 @@ import {
   ArrowLeft,
   CreditCard,
   MapPin,
-  User,
   Mail,
-  Phone,
   Package,
   Shield,
   Truck
@@ -34,15 +33,12 @@ import { CreateOrderRequest, CreateOrderResponse, Order } from "@/lib/types/orde
 
 export default function CheckoutPage() {
   const { state } = useCart()
-  const [useSameAddress, setUseSameAddress] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Form state
   const [contactInfo, setContactInfo] = useState({
     email: "",
-    phone: "",
-    firstName: "",
-    lastName: ""
+    phone: ""
   })
 
   const [shippingAddress, setShippingAddress] = useState({
@@ -56,21 +52,10 @@ export default function CheckoutPage() {
     country: "México"
   })
 
-  const [billingAddress, setBillingAddress] = useState({
-    name: "",
-    addressLine1: "",
-    addressLine2: "",
-    colonia: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "México"
-  })
 
   const validateForm = (): boolean => {
     // Validate contact info
-    if (!contactInfo.firstName.trim() || !contactInfo.lastName.trim() ||
-        !contactInfo.email.trim() || !contactInfo.phone.trim()) {
+    if (!contactInfo.email.trim() || !contactInfo.phone.trim()) {
       toast({
         title: "Información incompleta",
         description: "Completa toda la información de contacto.",
@@ -86,16 +71,6 @@ export default function CheckoutPage() {
       toast({
         title: "Dirección incompleta",
         description: "Completa toda la información de envío.",
-        variant: "destructive"
-      })
-      return false
-    }
-
-    // Validate billing address if different
-    if (!useSameAddress && billingAddress.name.trim() === '') {
-      toast({
-        title: "Dirección de facturación incompleta",
-        description: "Completa la información de facturación o usa la misma dirección de envío.",
         variant: "destructive"
       })
       return false
@@ -120,12 +95,27 @@ export default function CheckoutPage() {
 
     setIsProcessing(true)
     try {
+      // Auto-subscribe to email list
+      try {
+        await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: contactInfo.email })
+        })
+      } catch (error) {
+        console.log('Email subscription failed (non-critical):', error)
+      }
+
       const orderRequest: CreateOrderRequest = {
         items: state.items,
-        customerInfo: contactInfo,
+        customerInfo: {
+          ...contactInfo,
+          firstName: shippingAddress.name.split(' ')[0] || shippingAddress.name,
+          lastName: shippingAddress.name.split(' ').slice(1).join(' ') || ''
+        },
         shippingAddress: shippingAddress,
-        billingAddress: useSameAddress ? undefined : billingAddress,
-        useSameAddress: useSameAddress,
+        billingAddress: undefined,
+        useSameAddress: true,
         couponCode: state.couponCode
       }
 
@@ -225,39 +215,13 @@ export default function CheckoutPage() {
           {/* Contact Information */}
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-6 flex items-center">
-              <User className="w-5 h-5 mr-2" />
+              <Mail className="w-5 h-5 mr-2" />
               Información de Contacto
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">Nombre</Label>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  autoComplete="given-name"
-                  value={contactInfo.firstName}
-                  onChange={(e) => setContactInfo(prev => ({ ...prev, firstName: e.target.value }))}
-                  placeholder="Tu nombre"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Apellidos</Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  autoComplete="family-name"
-                  value={contactInfo.lastName}
-                  onChange={(e) => setContactInfo(prev => ({ ...prev, lastName: e.target.value }))}
-                  placeholder="Tus apellidos"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
                   name="email"
@@ -410,48 +374,6 @@ export default function CheckoutPage() {
             </div>
           </Card>
 
-          {/* Billing Address */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold flex items-center">
-                <CreditCard className="w-5 h-5 mr-2" />
-                Dirección de Facturación
-              </h2>
-            </div>
-
-            <div className="flex items-center space-x-2 mb-4">
-              <Checkbox
-                id="useSameAddress"
-                checked={useSameAddress}
-                onCheckedChange={(checked) => setUseSameAddress(checked === true)}
-              />
-              <Label htmlFor="useSameAddress" className="text-sm">
-                Usar la misma dirección de envío
-              </Label>
-            </div>
-
-            {!useSameAddress && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="billingName">Nombre completo</Label>
-                  <Input
-                    id="billingName"
-                    name="billingName"
-                    autoComplete="billing name"
-                    value={billingAddress.name}
-                    onChange={(e) => setBillingAddress(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Nombre completo para facturación"
-                    required={!useSameAddress}
-                  />
-                </div>
-
-                {/* Similar billing address fields would go here */}
-                <p className="text-sm text-muted-foreground">
-                  Los campos de dirección de facturación aparecerían aquí cuando se desmarca la casilla anterior.
-                </p>
-              </div>
-            )}
-          </Card>
         </div>
 
         {/* Order Summary */}
@@ -466,8 +388,16 @@ export default function CheckoutPage() {
             <div className="space-y-4 mb-6">
               {state.items.map((item) => (
                 <div key={item.id} className="flex items-center space-x-3">
-                  <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                    <span className="text-xs font-medium">{item.quantity}</span>
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={item.product.images[0]?.url}
+                      alt={item.product.images[0]?.alt}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute bottom-0 right-0 bg-black/70 text-white text-xs font-medium px-1 rounded-tl">
+                      {item.quantity}
+                    </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.product.name}</p>
@@ -523,12 +453,12 @@ export default function CheckoutPage() {
             {/* Checkout Button */}
             <Button
               size="lg"
-              className="w-full mb-4 bg-yellow-500 hover:bg-yellow-600 text-black font-bold border-2 border-yellow-500 hover:border-yellow-600 shadow-lg hover:shadow-xl transition-all duration-200"
+              className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200"
               onClick={handleCheckout}
               disabled={isProcessing}
             >
               <CreditCard className="w-5 h-5 mr-2" />
-              {isProcessing ? "Creando pedido..." : "Pagar con MercadoPago"}
+              {isProcessing ? "Procesando..." : "Comprar Ahora"}
             </Button>
 
             {/* Security Info */}
