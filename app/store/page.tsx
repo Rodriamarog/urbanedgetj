@@ -17,34 +17,28 @@ import {
   TrendingUp
 } from "lucide-react"
 
-const products = [
-  {
-    id: "ferrari-jacket",
-    slug: "chaqueta-f1-ferrari",
-    name: "Chaqueta F1 Ferrari",
-    price: 1999,
-    basePrice: 1723.28,
-    ivaPercentage: 16,
-    image: "/ferrari/female/female-model-1.png",
-    productImage: "/ferrari-black-front.png",
-    category: "Mujer",
-    brand: "Ferrari",
-    gender: "female"
-  },
-  {
-    id: "redbull-jacket",
-    slug: "chaqueta-red-bull-racing",
-    name: "Chaqueta Red Bull Racing",
-    price: 1999,
-    basePrice: 1723.28,
-    ivaPercentage: 16,
-    image: "/redbull/female/female-1.png",
-    productImage: "/redbull-front.png",
-    category: "Mujer",
-    brand: "Red Bull",
-    gender: "female"
+import { unifiedProducts } from "@/lib/data/unified-products"
+
+const products = unifiedProducts.map(product => {
+  // Get the generic/unisex image (not gender-specific)
+  const genericImage = product.images.find(img => img.gender === 'unisex' && img.type === 'product') ||
+                      product.images.find(img => img.isPrimary) ||
+                      product.images[0]
+
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    price: product.price,
+    basePrice: product.basePrice,
+    ivaPercentage: product.ivaPercentage,
+    image: genericImage?.url || '',
+    productImage: genericImage?.url || '',
+    category: "Unisex",
+    brand: product.name.includes('Ferrari') ? 'Ferrari' : product.name.includes('Red Bull') ? 'Red Bull' : 'Lamborghini',
+    gender: "unisex"
   }
-]
+})
 
 const brandValues = [
   {

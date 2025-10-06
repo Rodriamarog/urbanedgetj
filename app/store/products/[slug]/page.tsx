@@ -48,7 +48,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         {/* Interactive Product Components (Client) */}
         <div className="mb-16">
           <ProductPageClient product={product} />
-          <ProductFeatures />
+          <ProductFeatures product={product} />
         </div>
 
         {/* Related Products (Server Component) */}

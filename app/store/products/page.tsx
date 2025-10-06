@@ -15,9 +15,9 @@ import { unifiedProducts as products } from "@/lib/data/unified-products"
 import { Product } from "@/lib/types/product"
 
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
-  // Get female model image for display
-  const femaleImage = product.images.find((img: any) =>
-    img.type === 'lifestyle' && img.gender === 'female'
+  // Get generic/unisex product image for display (NOT gender-specific)
+  const genericImage = product.images.find((img: any) =>
+    img.gender === 'unisex' && img.type === 'product'
   ) || product.images.find((img: any) => img.isPrimary) || product.images[0]
 
   return (
@@ -26,8 +26,8 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         <div className="relative overflow-hidden">
           <div className="aspect-square relative">
             <Image
-              src={femaleImage?.url || ''}
-              alt={femaleImage?.alt || product.name}
+              src={genericImage?.url || ''}
+              alt={genericImage?.alt || product.name}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />

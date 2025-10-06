@@ -1,3 +1,14 @@
+export interface ProductReview {
+  id: number
+  name: string
+  avatar?: string
+  rating: number
+  date: string
+  review: string
+  verified: boolean
+  images?: string[]  // Array of image URLs for this review
+}
+
 export interface Product {
   id: string
   name: string
@@ -18,6 +29,7 @@ export interface Product {
   materials?: string[]
   careInstructions?: string[]
   features?: string[]
+  reviews?: ProductReview[]  // Customer reviews
   isNew?: boolean
   isBestseller?: boolean
   isLimited?: boolean
