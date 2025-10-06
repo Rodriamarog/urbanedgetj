@@ -44,7 +44,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <Badge variant="outline">{categoryName}</Badge>
         </div>
         <h1 className="text-3xl font-bold text-foreground mb-2">{product.name}</h1>
-        <p className="text-lg text-muted-foreground">{product.shortDescription}</p>
       </div>
 
 

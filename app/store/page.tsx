@@ -184,14 +184,9 @@ export default function StorePage() {
 
                   <div className="p-3 md:p-6 flex flex-col flex-1">
                     {/* Title - Fixed height for up to 2 lines */}
-                    <h3 className="font-semibold text-lg text-foreground mb-2 min-h-[3.5rem] flex items-start leading-tight">
+                    <h3 className="font-semibold text-lg text-foreground mb-4 min-h-[3.5rem] flex items-start leading-tight">
                       {product.name}
                     </h3>
-
-                    {/* Description - Fixed height */}
-                    <p className="text-sm text-muted-foreground mb-4 min-h-[2.5rem] flex items-start leading-tight">
-                      Chaqueta F1 premium con diseño auténtico
-                    </p>
 
                     {/* Price - Fixed height */}
                     <div className="mb-4 min-h-[2rem] flex items-center">
