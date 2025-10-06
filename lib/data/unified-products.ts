@@ -136,7 +136,7 @@ export const unifiedProducts: Product[] = [
         name: "Ana Martínez",
         rating: 5,
         date: "Hace 2 semanas",
-        review: "¡Me encanta! La chaqueta Ferrari es de excelente calidad. El negro se ve elegante y combina con todo. Super recomendada.",
+        review: "me encantaa la chaqueta esta bien bonita y se siente de calidad, el negro combina con todo 🖤",
         verified: true,
         images: ['/ferrari/review1.jpg', '/ferrari/review1.2.jpg']
       },
@@ -145,7 +145,7 @@ export const unifiedProducts: Product[] = [
         name: "Roberto Sánchez",
         rating: 5,
         date: "Hace 1 mes",
-        review: "Perfecta para lucir en la calle. La calidad es premium y el diseño Ferrari auténtico. Llegó rápido a Tijuana.",
+        review: "perfecta para la calle compa, llego rapido a tj y la calidad esta chida. el diseño ferrari se ve original",
         verified: true,
         images: ['/ferrari/review2.jpg', '/ferrari/review2.2.jpg']
       },
@@ -154,7 +154,7 @@ export const unifiedProducts: Product[] = [
         name: "Valeria Torres",
         rating: 4,
         date: "Hace 3 semanas",
-        review: "Muy buena chaqueta, solo que tardó un poco más de lo esperado. Pero la calidad lo vale totalmente.",
+        review: "muy buena chaqueta solo tardo un poco en llegar pero vale la pena la calidad esta super bien",
         verified: false
       }
     ],
@@ -314,7 +314,7 @@ export const unifiedProducts: Product[] = [
         name: "Luis Hernández",
         rating: 5,
         date: "Hace 1 semana",
-        review: "La chaqueta Red Bull está increíble. Los colores son vibrantes y la calidad es top. Vale cada peso!",
+        review: "esta chaqueta esta de lujo los colores estan bien vivos y la calidad ni se diga, vale cada peso la neta",
         verified: true,
         images: ['/redbull/review1.avif', '/redbull/review1.2.avif']
       },
@@ -323,7 +323,7 @@ export const unifiedProducts: Product[] = [
         name: "Sofía Ramírez",
         rating: 5,
         date: "Hace 2 semanas",
-        review: "Súper cómoda y el diseño es auténtico. Me llegó en perfectas condiciones. Urban Edge es confiable!",
+        review: "super comoda y el diseño se ve original me llego bien rapido en perfectas condiciones 💙",
         verified: true,
         images: ['/redbull/review2.avif', '/redbull/review2.2.avif']
       },
@@ -332,7 +332,7 @@ export const unifiedProducts: Product[] = [
         name: "Miguel Ángel Cruz",
         rating: 5,
         date: "Hace 1 mes",
-        review: "Excelente compra! La chaqueta Red Bull supera mis expectativas. Material de primera y fit perfecto.",
+        review: "no mames esta chingona, el material esta de primera y me quedo perfecto. 100% recomendada",
         verified: true,
         images: ['/redbull/review3.avif']
       }
@@ -419,7 +419,7 @@ export const unifiedProducts: Product[] = [
         name: "Daniela Flores",
         rating: 5,
         date: "Hace 3 días",
-        review: "El rojo Ferrari es espectacular! La chaqueta es tal cual las fotos. Super contenta con mi compra.",
+        review: "el rojo ferrari esta precioso!! la chaqueta es igualita a las fotos super contenta ❤️",
         verified: true
       },
       {
@@ -427,7 +427,7 @@ export const unifiedProducts: Product[] = [
         name: "Fernando Gómez",
         rating: 5,
         date: "Hace 1 semana",
-        review: "Calidad premium, el color rojo es vibrante. Llegó antes de lo esperado. 100% recomendado!",
+        review: "calidad premium carnal el color rojo esta bien vivo llego antes de lo que pensaba",
         verified: true
       },
       {
@@ -435,7 +435,7 @@ export const unifiedProducts: Product[] = [
         name: "Patricia Morales",
         rating: 4,
         date: "Hace 2 semanas",
-        review: "Muy linda chaqueta, el rojo es hermoso. Solo le doy 4 estrellas porque viene un poco grande, pero nada grave.",
+        review: "muy linda el rojo esta hermoso nomas viene un poquito grande pero no pasa nada",
         verified: false
       }
     ],
@@ -521,7 +521,7 @@ export const unifiedProducts: Product[] = [
         name: "Alejandro Vargas",
         rating: 5,
         date: "Hace 5 días",
-        review: "La chaqueta Lamborghini es una obra de arte. Los detalles dorados se ven premium. Muy exclusiva!",
+        review: "esta chaqueta lamborghini esta increible los detalles dorados se ven bien premium, bien exclusiva",
         verified: true
       },
       {
@@ -529,7 +529,7 @@ export const unifiedProducts: Product[] = [
         name: "Gabriela Reyes",
         rating: 5,
         date: "Hace 1 semana",
-        review: "Me fascina! El diseño Lamborghini es único y la calidad es increíble. Definitivamente la mejor compra del año.",
+        review: "me fascinaa el diseño lambo es unico y la calidad esta de otro nivel la mejor compra que he hecho 🔥",
         verified: true
       },
       {
@@ -537,7 +537,7 @@ export const unifiedProducts: Product[] = [
         name: "Carlos Jiménez",
         rating: 5,
         date: "Hace 2 semanas",
-        review: "Espectacular! El negro con dorado es elegante y deportivo a la vez. Urban Edge TJ nunca decepciona.",
+        review: "el negro con dorado esta elegante y deportivo al mismo tiempo, nunca falla urban edge",
         verified: false
       }
     ],
