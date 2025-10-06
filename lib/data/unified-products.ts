@@ -104,8 +104,8 @@ export const unifiedProducts: Product[] = [
       { id: 's-male', name: 'S', label: 'Chica (Hombre)', inStock: true, stockQuantity: 15, gender: 'male' },
       { id: 'm-male', name: 'M', label: 'Mediana (Hombre)', inStock: true, stockQuantity: 20, gender: 'male' },
       { id: 'l-male', name: 'L', label: 'Grande (Hombre)', inStock: true, stockQuantity: 18, gender: 'male' },
-      { id: 'xl-male', name: 'XL', label: 'Extra Grande (Hombre)', inStock: true, stockQuantity: 12, gender: 'male' },
-      { id: 'xxl-male', name: 'XXL', label: 'Doble Extra Grande (Hombre)', inStock: true, stockQuantity: 6, gender: 'male' },
+      { id: 'xl-male', name: 'XL', label: 'Extra Grande (Hombre)', inStock: false, stockQuantity: 0, gender: 'male' },
+      { id: 'xxl-male', name: 'XXL', label: 'Doble Extra Grande (Hombre)', inStock: false, stockQuantity: 0, gender: 'male' },
       // Female sizes
       { id: 'xs-female', name: 'XS', label: 'Extra Chica (Mujer)', inStock: true, stockQuantity: 8, gender: 'female' },
       { id: 's-female', name: 'S', label: 'Chica (Mujer)', inStock: true, stockQuantity: 15, gender: 'female' },
@@ -387,8 +387,8 @@ export const unifiedProducts: Product[] = [
       { id: 's-male', name: 'S', label: 'Chica (Hombre)', inStock: true, stockQuantity: 15, gender: 'male' },
       { id: 'm-male', name: 'M', label: 'Mediana (Hombre)', inStock: true, stockQuantity: 20, gender: 'male' },
       { id: 'l-male', name: 'L', label: 'Grande (Hombre)', inStock: true, stockQuantity: 18, gender: 'male' },
-      { id: 'xl-male', name: 'XL', label: 'Extra Grande (Hombre)', inStock: true, stockQuantity: 12, gender: 'male' },
-      { id: 'xxl-male', name: 'XXL', label: 'Doble Extra Grande (Hombre)', inStock: true, stockQuantity: 6, gender: 'male' },
+      { id: 'xl-male', name: 'XL', label: 'Extra Grande (Hombre)', inStock: false, stockQuantity: 0, gender: 'male' },
+      { id: 'xxl-male', name: 'XXL', label: 'Doble Extra Grande (Hombre)', inStock: false, stockQuantity: 0, gender: 'male' },
       // Female sizes
       { id: 'xs-female', name: 'XS', label: 'Extra Chica (Mujer)', inStock: true, stockQuantity: 8, gender: 'female' },
       { id: 's-female', name: 'S', label: 'Chica (Mujer)', inStock: true, stockQuantity: 15, gender: 'female' },
@@ -489,8 +489,8 @@ export const unifiedProducts: Product[] = [
       { id: 's-male', name: 'S', label: 'Chica (Hombre)', inStock: true, stockQuantity: 15, gender: 'male' },
       { id: 'm-male', name: 'M', label: 'Mediana (Hombre)', inStock: true, stockQuantity: 20, gender: 'male' },
       { id: 'l-male', name: 'L', label: 'Grande (Hombre)', inStock: true, stockQuantity: 18, gender: 'male' },
-      { id: 'xl-male', name: 'XL', label: 'Extra Grande (Hombre)', inStock: true, stockQuantity: 12, gender: 'male' },
-      { id: 'xxl-male', name: 'XXL', label: 'Doble Extra Grande (Hombre)', inStock: true, stockQuantity: 6, gender: 'male' },
+      { id: 'xl-male', name: 'XL', label: 'Extra Grande (Hombre)', inStock: false, stockQuantity: 0, gender: 'male' },
+      { id: 'xxl-male', name: 'XXL', label: 'Doble Extra Grande (Hombre)', inStock: false, stockQuantity: 0, gender: 'male' },
       // Female sizes
       { id: 'xs-female', name: 'XS', label: 'Extra Chica (Mujer)', inStock: true, stockQuantity: 8, gender: 'female' },
       { id: 's-female', name: 'S', label: 'Chica (Mujer)', inStock: true, stockQuantity: 15, gender: 'female' },

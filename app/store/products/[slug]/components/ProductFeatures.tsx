@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,8 @@ import {
   RefreshCw,
   Star,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 import { Product } from "@/lib/types/product"
 
@@ -22,8 +25,31 @@ interface ProductFeaturesProps {
 }
 
 export default function ProductFeatures({ product }: ProductFeaturesProps) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
+  const [currentReviewImages, setCurrentReviewImages] = useState<string[]>([])
   const reviews = product.reviews || []
+
+  const openImageGallery = (images: string[], startIndex: number) => {
+    setCurrentReviewImages(images)
+    setSelectedImageIndex(startIndex)
+  }
+
+  const closeImageGallery = () => {
+    setSelectedImageIndex(null)
+    setCurrentReviewImages([])
+  }
+
+  const goToNextImage = () => {
+    if (selectedImageIndex !== null && currentReviewImages.length > 0) {
+      setSelectedImageIndex((selectedImageIndex + 1) % currentReviewImages.length)
+    }
+  }
+
+  const goToPrevImage = () => {
+    if (selectedImageIndex !== null && currentReviewImages.length > 0) {
+      setSelectedImageIndex((selectedImageIndex - 1 + currentReviewImages.length) % currentReviewImages.length)
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -103,7 +129,7 @@ export default function ProductFeatures({ product }: ProductFeaturesProps) {
                         {review.images.map((imageUrl, idx) => (
                           <button
                             key={idx}
-                            onClick={() => setSelectedImage(imageUrl)}
+                            onClick={() => openImageGallery(review.images!, idx)}
                             className="relative w-20 h-20 rounded-lg overflow-hidden border border-border hover:border-primary transition-colors cursor-pointer"
                           >
                             <Image
@@ -124,21 +150,50 @@ export default function ProductFeatures({ product }: ProductFeaturesProps) {
         </div>
       )}
 
-      {/* Image Modal */}
-      <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-        <DialogContent className="max-w-3xl w-full p-0">
-          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10">
+      {/* Image Gallery Modal */}
+      <Dialog open={selectedImageIndex !== null} onOpenChange={(open) => !open && closeImageGallery()}>
+        <DialogContent className="max-w-4xl w-full p-0">
+          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10 bg-black/50 text-white hover:bg-black/70">
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </DialogClose>
-          {selectedImage && (
-            <div className="relative w-full h-[80vh]">
+
+          {selectedImageIndex !== null && currentReviewImages.length > 0 && (
+            <div className="relative w-full h-[80vh] group">
               <Image
-                src={selectedImage}
-                alt="Review image"
+                src={currentReviewImages[selectedImageIndex]}
+                alt={`Review image ${selectedImageIndex + 1}`}
                 fill
                 className="object-contain"
               />
+
+              {/* Navigation Arrows - Only show if more than 1 image */}
+              {currentReviewImages.length > 1 && (
+                <>
+                  <Button
+                    onClick={goToPrevImage}
+                    variant="ghost"
+                    size="icon"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronLeft className="h-8 w-8" />
+                  </Button>
+
+                  <Button
+                    onClick={goToNextImage}
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronRight className="h-8 w-8" />
+                  </Button>
+
+                  {/* Image counter */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                    {selectedImageIndex + 1} / {currentReviewImages.length}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </DialogContent>
