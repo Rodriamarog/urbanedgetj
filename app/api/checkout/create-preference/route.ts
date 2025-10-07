@@ -70,11 +70,10 @@ function calculateTotals(items: CartItem[], couponCode?: string) {
   // Calculate shipping (free over $1500 MXN)
   const shipping = subtotal >= 1500 ? 0 : 150
 
-  // Calculate IVA (16% tax)
-  const taxableAmount = subtotal - discount + shipping
-  const tax = Math.round(taxableAmount * 0.16)
+  // Prices already include IVA (standard in Mexico)
+  const tax = 0
 
-  const total = subtotal + tax + shipping - discount
+  const total = subtotal + shipping - discount
 
   return { subtotal, tax, shipping, discount, total }
 }
@@ -116,17 +115,24 @@ export async function POST(request: NextRequest) {
       externalReference
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+
     // Create MercadoPago preference
-    const mpItems: any[] = body.items.map(item => ({
-      id: item.product.id,
-      title: item.product.name,
-      description: `${item.product.description} - Talla: ${item.size.toUpperCase()}`,
-      picture_url: item.product.images?.[0] || undefined,
-      category_id: item.product.category,
-      quantity: item.quantity,
-      currency_id: 'MXN' as const,
-      unit_price: item.price
-    }))
+    const mpItems: any[] = body.items.map(item => {
+      const imageUrl = item.product.images?.[0]?.url
+      const fullImageUrl = imageUrl ? `${baseUrl}${imageUrl}` : undefined
+
+      return {
+        id: item.product.id,
+        title: item.product.name,
+        description: `${item.product.description} - Talla: ${item.size.toUpperCase()}`,
+        picture_url: fullImageUrl,
+        category_id: item.product.category,
+        quantity: item.quantity,
+        currency_id: 'MXN' as const,
+        unit_price: item.price
+      }
+    })
 
     // Add shipping as item if not free
     if (totals.shipping > 0) {
@@ -137,18 +143,6 @@ export async function POST(request: NextRequest) {
         quantity: 1,
         currency_id: 'MXN' as const,
         unit_price: totals.shipping
-      })
-    }
-
-    // Add tax as item
-    if (totals.tax > 0) {
-      mpItems.push({
-        id: 'tax',
-        title: 'IVA (16%)',
-        description: 'Impuesto al Valor Agregado',
-        quantity: 1,
-        currency_id: 'MXN' as const,
-        unit_price: totals.tax
       })
     }
 
@@ -164,10 +158,19 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    const successUrl = process.env.MERCADOPAGO_SUCCESS_URL || '/store/order/success'
+    const failureUrl = process.env.MERCADOPAGO_FAILURE_URL || '/store/order/failure'
+    const pendingUrl = process.env.MERCADOPAGO_PENDING_URL || '/store/order/pending'
 
-    const preferenceData: MercadoPagoPreference = {
-      id: '', // Will be set by MercadoPago
+    const backUrls = {
+      success: `${baseUrl}${successUrl}?order_id=${orderId}`,
+      failure: `${baseUrl}${failureUrl}?order_id=${orderId}`,
+      pending: `${baseUrl}${pendingUrl}?order_id=${orderId}`
+    }
+
+    console.log('Creating preference with back_urls:', backUrls)
+
+    const preferenceData = {
       items: mpItems,
       payer: {
         name: body.customerInfo.firstName,
@@ -177,14 +180,11 @@ export async function POST(request: NextRequest) {
           number: body.customerInfo.phone.replace(/[^\d]/g, '') // Remove non-digits
         }
       },
-      back_urls: {
-        success: `${baseUrl}${process.env.MERCADOPAGO_SUCCESS_URL}?order_id=${orderId}`,
-        failure: `${baseUrl}${process.env.MERCADOPAGO_FAILURE_URL}?order_id=${orderId}`,
-        pending: `${baseUrl}${process.env.MERCADOPAGO_PENDING_URL}?order_id=${orderId}`
-      },
-      auto_return: 'approved',
+      back_urls: backUrls,
+      // auto_return: 'approved', // Temporarily disabled to test
       payment_methods: {
-        installments: 12 // Max installments
+        installments: 12, // Allow up to 12 monthly installments
+        default_installments: 1 // Default to single payment
       },
       notification_url: `${baseUrl}/api/webhook/mercadopago`,
       statement_descriptor: 'URBAN EDGE TJ',
@@ -193,6 +193,8 @@ export async function POST(request: NextRequest) {
       expiration_date_from: new Date().toISOString(),
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
     }
+
+    console.log('Full preference data:', JSON.stringify(preferenceData, null, 2))
 
     // Create preference in MercadoPago
     const mpPreference = await preference.create({ body: preferenceData })
