@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MercadoPagoConfig, Preference } from 'mercadopago'
+import { Resend } from 'resend'
 import {
   CreateOrderRequest,
   CreateOrderResponse,
@@ -7,6 +8,10 @@ import {
   MercadoPagoPreference
 } from '@/lib/types/order'
 import { CartItem } from '@/lib/types/cart'
+import { getOrderNotificationEmail } from '@/lib/email/templates/order-notification'
+import { createOrder } from '@/lib/supabase/orders'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Initialize MercadoPago
 const client = new MercadoPagoConfig({
@@ -206,8 +211,27 @@ export async function POST(request: NextRequest) {
     order.preferenceId = mpPreference.id
     order.mercadoPagoId = mpPreference.id
 
-    // TODO: In a real app, save order to database
-    // For now, we'll return it to be stored in localStorage
+    // Save order to database
+    const dbResult = await createOrder(order)
+    if (!dbResult.success) {
+      console.error('Failed to save order to database, but continuing...', dbResult.error)
+      // Don't fail the checkout if database save fails
+    }
+
+    // Send order notification email
+    try {
+      const emailTemplate = getOrderNotificationEmail(order)
+      await resend.emails.send({
+        from: 'Urban Edge TJ <orders@urbanedgetj.com>',
+        to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
+        subject: emailTemplate.subject,
+        html: emailTemplate.html
+      })
+      console.log('✅ Order notification email sent:', order.id)
+    } catch (emailError) {
+      console.error('❌ Failed to send order notification email:', emailError)
+      // Don't fail the order if email fails
+    }
 
     return NextResponse.json({
       success: true,
