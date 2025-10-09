@@ -192,7 +192,7 @@ export default function OrderPendingPage() {
               <div className="w-3 h-3 bg-gray-300 rounded-full mr-3"></div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Enviado</p>
-                <p className="text-xs text-muted-foreground">3-5 días hábiles</p>
+                <p className="text-xs text-muted-foreground">10-15 días hábiles</p>
               </div>
             </div>
           </div>

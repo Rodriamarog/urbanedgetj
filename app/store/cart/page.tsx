@@ -188,24 +188,6 @@ const CartSummary: React.FC = () => {
           <span>${state.subtotal.toLocaleString()} MXN</span>
         </div>
 
-        {state.discount > 0 && (
-          <div className="flex justify-between text-green-600">
-            <span className="flex items-center">
-              <Tag className="w-4 h-4 mr-1" />
-              Descuento ({state.couponCode})
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleRemoveCoupon}
-                className="ml-2 h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
-              >
-                Quitar
-              </Button>
-            </span>
-            <span>-${state.discount.toLocaleString()} MXN</span>
-          </div>
-        )}
-
         <div className="flex justify-between">
           <span className="flex items-center">
             <Truck className="w-4 h-4 mr-1" />
@@ -224,6 +206,24 @@ const CartSummary: React.FC = () => {
           <span>IVA (16%)</span>
           <span>${state.tax.toLocaleString()} MXN</span>
         </div>
+
+        {state.discount > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span className="flex items-center">
+              <Tag className="w-4 h-4 mr-1" />
+              Descuento ({state.couponCode})
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRemoveCoupon}
+                className="ml-2 h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
+              >
+                Quitar
+              </Button>
+            </span>
+            <span>-${state.discount.toLocaleString()} MXN</span>
+          </div>
+        )}
 
         <Separator />
 

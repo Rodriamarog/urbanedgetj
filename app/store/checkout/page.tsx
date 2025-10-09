@@ -419,13 +419,6 @@ export default function CheckoutPage() {
                 <span>${state.subtotal.toLocaleString()} MXN</span>
               </div>
 
-              {state.discount > 0 && (
-                <div className="flex justify-between text-sm text-green-600">
-                  <span>Descuento ({state.couponCode})</span>
-                  <span>-${state.discount.toLocaleString()} MXN</span>
-                </div>
-              )}
-
               <div className="flex justify-between text-sm">
                 <span>Envío</span>
                 <span>
@@ -441,6 +434,13 @@ export default function CheckoutPage() {
                 <span>IVA (16%)</span>
                 <span>${state.tax.toLocaleString()} MXN</span>
               </div>
+
+              {state.discount > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>Descuento ({state.couponCode})</span>
+                  <span>-${state.discount.toLocaleString()} MXN</span>
+                </div>
+              )}
 
               <Separator />
 
@@ -469,7 +469,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex items-center">
                 <Truck className="w-4 h-4 mr-2" />
-                <span>Entrega en 3-5 días hábiles</span>
+                <span>Entrega en 10-15 días hábiles</span>
               </div>
               <div className="mt-3 p-2 bg-muted rounded text-center">
                 <span>Serás redirigido a MercadoPago para completar tu pago de forma segura</span>

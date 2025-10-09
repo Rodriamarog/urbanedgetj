@@ -220,21 +220,21 @@ export default function OrderSuccessPage() {
                   <div className="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
                   <div>
                     <p className="text-sm font-medium">Preparando envío</p>
-                    <p className="text-xs text-muted-foreground">1-2 días hábiles</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-gray-300 rounded-full mr-3"></div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">En tránsito</p>
                     <p className="text-xs text-muted-foreground">3-5 días hábiles</p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-gray-300 rounded-full mr-3"></div>
                   <div>
+                    <p className="text-sm font-medium text-muted-foreground">En tránsito</p>
+                    <p className="text-xs text-muted-foreground">5-10 días hábiles</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-gray-300 rounded-full mr-3"></div>
+                  <div>
                     <p className="text-sm font-medium text-muted-foreground">Entregado</p>
-                    <p className="text-xs text-muted-foreground">5-7 días hábiles</p>
+                    <p className="text-xs text-muted-foreground">10-15 días hábiles</p>
                   </div>
                 </div>
               </div>

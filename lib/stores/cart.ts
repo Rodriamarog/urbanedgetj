@@ -104,53 +104,32 @@ export const dehydrateCartItems = (cartItems: CartItem[]): CartStorage['items'] 
 
 // Calculate cart totals
 export const calculateCartTotals = (items: CartItem[], couponCode?: string) => {
-  // For products with basePrice, use exact pricing; otherwise fallback to calculation
-  const itemsWithExactPricing = items.map(item => ({
-    ...item,
-    exactTotal: item.product.basePrice && item.product.ivaPercentage
-      ? item.product.price * item.quantity  // Use exact price (1999) per item
-      : item.price * item.quantity
-  }))
+  // Product price already includes 16% IVA
+  // To show IVA separately: Price = Base + (Base * 0.16), so Base = Price / 1.16
+  const priceWithIVA = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  const basePrice = Math.round(priceWithIVA / 1.16)
+  const tax = priceWithIVA - basePrice // IVA amount for display
 
-  // Calculate subtotal using base price (before IVA)
-  const subtotal = items.reduce((sum, item) => {
-    const basePrice = item.product.basePrice || item.price
-    return sum + (basePrice * item.quantity)
-  }, 0)
+  // Subtotal (base price without IVA for display)
+  const subtotal = basePrice
 
-  // Apply coupon discount on subtotal (base price)
+  // Calculate shipping (free over $1500 MXN)
+  const shipping = priceWithIVA >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_COST
+
+  // Total before discount = base + IVA + shipping
+  const totalBeforeDiscount = priceWithIVA + shipping
+
+  // Apply coupon discount on total (after IVA and shipping)
   let discount = 0
   if (couponCode && COUPON_CODES[couponCode as CouponCode]) {
     const coupon = COUPON_CODES[couponCode as CouponCode]
-    if (coupon.active && subtotal >= coupon.minAmount) {
-      discount = subtotal * coupon.discount
+    if (coupon.active && priceWithIVA >= coupon.minAmount) {
+      discount = Math.round(totalBeforeDiscount * coupon.discount)
     }
   }
 
-  const discountedSubtotal = subtotal - discount
-
-  // For exact pricing products, calculate tax as the difference between total and subtotal
-  const hasExactPricing = items.every(item => item.product.basePrice && item.product.ivaPercentage)
-
-  let tax: number
-  let total: number
-
-  if (hasExactPricing && !couponCode) {
-    // Use exact total pricing - sum of all exact product prices
-    const exactItemsTotal = itemsWithExactPricing.reduce((sum, item) => sum + item.exactTotal, 0)
-    total = exactItemsTotal
-    tax = total - discountedSubtotal // Tax is the difference to reach exact total
-  } else {
-    // Fallback to calculation for discounted items or non-exact pricing
-    tax = discountedSubtotal * TAX_RATE
-    total = discountedSubtotal + tax
-  }
-
-  // Calculate shipping based on the subtotal before tax
-  const shipping = discountedSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_COST
-
-  // Add shipping to final total
-  total += shipping
+  // Final total
+  const total = totalBeforeDiscount - discount
 
   return {
     subtotal: Math.round(subtotal * 100) / 100, // Round to 2 decimal places

@@ -61,19 +61,22 @@ function validateOrderRequest(data: CreateOrderRequest): { valid: boolean; error
 function calculateTotals(items: CartItem[], couponCode?: string) {
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
-  // Apply coupon discount
-  let discount = 0
-  if (couponCode === process.env.NEXT_PUBLIC_COUPON_CODE) {
-    discount = Math.round(subtotal * 0.20) // 20% discount
-  }
-
   // Calculate shipping (free over $1500 MXN)
   const shipping = subtotal >= 1500 ? 0 : 150
 
   // Prices already include IVA (standard in Mexico)
   const tax = 0
 
-  const total = subtotal + shipping - discount
+  // Calculate total before discount
+  const totalBeforeDiscount = subtotal + shipping + tax
+
+  // Apply coupon discount on total
+  let discount = 0
+  if (couponCode === process.env.NEXT_PUBLIC_COUPON_CODE) {
+    discount = Math.round(totalBeforeDiscount * 0.20) // 20% discount on total
+  }
+
+  const total = totalBeforeDiscount - discount
 
   return { subtotal, tax, shipping, discount, total }
 }
