@@ -287,11 +287,13 @@ export async function POST(request: NextRequest) {
                 updatedAt: new Date(dbOrder.updated_at || dbOrder.created_at)
               }
 
+              const emailContent = getOrderNotificationEmail(orderForEmail)
+
               await resend.emails.send({
                 from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
                 to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
-                subject: `Nueva orden: ${dbOrder.order_number}`,
-                html: getOrderNotificationEmail(orderForEmail)
+                subject: emailContent.subject,
+                html: emailContent.html
               })
               console.log('Order notification email sent successfully')
             } else {
