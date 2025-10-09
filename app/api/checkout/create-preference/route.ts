@@ -211,27 +211,11 @@ export async function POST(request: NextRequest) {
     order.preferenceId = mpPreference.id
     order.mercadoPagoId = mpPreference.id
 
-    // Save order to database
-    const dbResult = await createOrder(order)
-    if (!dbResult.success) {
-      console.error('Failed to save order to database, but continuing...', dbResult.error)
-      // Don't fail the checkout if database save fails
-    }
-
-    // Send order notification email
-    try {
-      const emailTemplate = getOrderNotificationEmail(order)
-      await resend.emails.send({
-        from: 'Urban Edge TJ <orders@urbanedgetj.com>',
-        to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
-        subject: emailTemplate.subject,
-        html: emailTemplate.html
-      })
-      console.log('✅ Order notification email sent:', order.id)
-    } catch (emailError) {
-      console.error('❌ Failed to send order notification email:', emailError)
-      // Don't fail the order if email fails
-    }
+    // Save order to database with 'pending' status
+    // This allows the webhook to find and update it when payment is processed
+    // Emails are only sent AFTER payment is approved (via webhook)
+    console.log('Saving pending order to database:', order.id)
+    await createOrder(order)
 
     return NextResponse.json({
       success: true,

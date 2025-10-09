@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { MercadoPagoConfig, Payment } from 'mercadopago'
+import { MercadoPagoConfig, Payment, Preference } from 'mercadopago'
 import crypto from 'crypto'
+import { Resend } from 'resend'
 import {
   PaymentNotification,
   PaymentStatus,
   PaymentMethod,
-  OrderStatus
+  OrderStatus,
+  Order
 } from '@/lib/types/order'
+import { getOrderNotificationEmail } from '@/lib/email/templates/order-notification'
+import { createOrder, updateOrderPaymentStatus, getOrderByExternalReference } from '@/lib/supabase/orders'
 
 // Initialize MercadoPago
 const client = new MercadoPagoConfig({
@@ -17,6 +21,8 @@ const client = new MercadoPagoConfig({
 })
 
 const payment = new Payment(client)
+const preference = new Preference(client)
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 function verifySignature(
   signature: string,
@@ -195,14 +201,123 @@ export async function POST(request: NextRequest) {
           amount: notification.amount
         })
 
-        // TODO: In a real app, save notification to database and update order status
-        // For now, we'll just log it
+        // Update order status in database based on payment status
+        const orderStatus = getOrderStatusFromPaymentStatus(notification.status)
 
-        // Here you would typically:
-        // 1. Update order status in database
-        // 2. Send confirmation email to customer
-        // 3. Update inventory if payment approved
-        // 4. Trigger fulfillment process
+        console.log('Updating order status:', {
+          externalReference,
+          orderStatus,
+          paymentStatus: notification.status
+        })
+
+        try {
+          await updateOrderPaymentStatus(
+            externalReference,
+            notification.paymentId,
+            notification.status,
+            orderStatus
+          )
+          console.log('Order status updated successfully')
+        } catch (error) {
+          console.error('Error updating order status:', error)
+          // Continue to send email even if status update fails
+        }
+
+        // Only send notification email on APPROVED payments
+        if (notification.status === 'approved') {
+          console.log('Sending order notification email to:', process.env.ORDER_NOTIFICATION_EMAIL)
+          try {
+            // Fetch full order from database
+            const orderResult = await getOrderByExternalReference(externalReference)
+
+            if (orderResult.success && orderResult.order) {
+              const dbOrder = orderResult.order
+
+              // Convert database order to Order type for email template
+              const orderForEmail: Order = {
+                id: dbOrder.order_number,
+                externalReference: dbOrder.external_reference,
+                preferenceId: dbOrder.mercadopago_preference_id || undefined,
+                mercadoPagoId: dbOrder.mercadopago_payment_id || undefined,
+
+                items: dbOrder.order_items.map((item: any) => ({
+                  product: item.product_snapshot || {
+                    id: item.product_id,
+                    name: item.product_name,
+                    slug: item.product_slug,
+                    images: []
+                  },
+                  size: item.size,
+                  quantity: item.quantity,
+                  price: item.unit_price
+                })),
+
+                customerInfo: {
+                  firstName: '',
+                  lastName: '',
+                  email: dbOrder.customer_email,
+                  phone: dbOrder.customer_phone
+                },
+
+                shippingAddress: {
+                  name: dbOrder.shipping_name,
+                  addressLine1: dbOrder.shipping_address_line1,
+                  addressLine2: dbOrder.shipping_address_line2 || undefined,
+                  colonia: dbOrder.shipping_colonia,
+                  city: dbOrder.shipping_city,
+                  state: dbOrder.shipping_state,
+                  postalCode: dbOrder.shipping_postal_code,
+                  country: dbOrder.shipping_country
+                },
+
+                useSameAddress: true,
+
+                subtotal: dbOrder.subtotal,
+                tax: dbOrder.tax,
+                shipping: dbOrder.shipping_cost,
+                discount: dbOrder.discount,
+                total: dbOrder.total,
+                currency: dbOrder.currency,
+                couponCode: dbOrder.coupon_code || undefined,
+
+                status: dbOrder.status as any,
+                paymentStatus: dbOrder.payment_status as any,
+
+                createdAt: new Date(dbOrder.created_at),
+                updatedAt: new Date(dbOrder.updated_at || dbOrder.created_at)
+              }
+
+              await resend.emails.send({
+                from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+                to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
+                subject: `Nueva orden: ${dbOrder.order_number}`,
+                html: getOrderNotificationEmail(orderForEmail)
+              })
+              console.log('Order notification email sent successfully')
+            } else {
+              console.error('Could not fetch order for email:', externalReference)
+              // Send basic notification without full order details
+              await resend.emails.send({
+                from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+                to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
+                subject: `Nueva orden: ${externalReference}`,
+                html: `
+                  <h2>Nueva orden recibida</h2>
+                  <p><strong>Referencia:</strong> ${externalReference}</p>
+                  <p><strong>ID de pago:</strong> ${notification.paymentId}</p>
+                  <p><strong>Monto:</strong> $${notification.amount.toLocaleString()} ${notification.currency}</p>
+                  <p><strong>Estado:</strong> ${notification.status}</p>
+                  <p>Revisa la orden completa en Supabase usando la referencia: ${externalReference}</p>
+                `
+              })
+            }
+          } catch (emailError) {
+            console.error('Failed to send order notification email:', emailError)
+            // Don't fail the webhook if email fails - order is already updated
+          }
+        } else {
+          console.log('Payment not approved yet, status:', notification.status)
+        }
 
         return NextResponse.json({
           success: true,

@@ -151,17 +151,25 @@ export async function createOrder(order: Order) {
 export async function updateOrderPaymentStatus(
   externalReference: string,
   paymentId: string,
-  status: 'approved' | 'rejected' | 'pending'
+  paymentStatus: string,
+  orderStatus: string
 ) {
   try {
+    const updateData: any = {
+      mercadopago_payment_id: paymentId,
+      payment_status: paymentStatus,
+      status: orderStatus,
+      updated_at: new Date().toISOString()
+    }
+
+    // Set paid_at timestamp when payment is approved
+    if (paymentStatus === 'approved') {
+      updateData.paid_at = new Date().toISOString()
+    }
+
     const { data, error } = await supabaseAdmin
       .from('orders')
-      .update({
-        mercadopago_payment_id: paymentId,
-        payment_status: status,
-        status: status === 'approved' ? 'approved' : status === 'rejected' ? 'rejected' : 'pending',
-        paid_at: status === 'approved' ? new Date().toISOString() : null
-      })
+      .update(updateData)
       .eq('external_reference', externalReference)
       .select()
       .single()
@@ -171,7 +179,7 @@ export async function updateOrderPaymentStatus(
       throw error
     }
 
-    console.log('✅ Payment status updated:', data.order_number, status)
+    console.log('✅ Payment status updated:', data.order_number, paymentStatus)
     return { success: true, order: data }
 
   } catch (error) {
@@ -199,6 +207,29 @@ export async function getOrderByNumber(orderNumber: string) {
 
   } catch (error) {
     console.error('Error fetching order:', error)
+    return { success: false, error }
+  }
+}
+
+/**
+ * Get order by external reference (for webhook lookups)
+ */
+export async function getOrderByExternalReference(externalReference: string) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('orders')
+      .select(`
+        *,
+        order_items (*)
+      `)
+      .eq('external_reference', externalReference)
+      .single()
+
+    if (error) throw error
+    return { success: true, order: data }
+
+  } catch (error) {
+    console.error('Error fetching order by external reference:', error)
     return { success: false, error }
   }
 }
