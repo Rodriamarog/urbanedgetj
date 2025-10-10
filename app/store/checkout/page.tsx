@@ -352,7 +352,7 @@ export default function CheckoutPage() {
             <Separator className="mb-6" />
 
             {/* Totals */}
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
                 <span>${state.subtotal.toLocaleString()} MXN</span>
@@ -390,7 +390,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Payment Brick - Always visible */}
-            <div id="payment-section" className="mb-4">
+            <div id="payment-section">
               <PaymentBrick
                 amount={state.total}
                 customerEmail={contactInfo.email || ""}
