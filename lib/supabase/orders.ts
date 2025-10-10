@@ -267,3 +267,51 @@ export async function updateOrderTracking(
     return { success: false, error }
   }
 }
+
+/**
+ * Delete an order (used for failed payments)
+ */
+export async function deleteOrder(externalReference: string) {
+  try {
+    // First get the order ID
+    const { data: order, error: fetchError } = await supabaseAdmin
+      .from('orders')
+      .select('id')
+      .eq('external_reference', externalReference)
+      .single()
+
+    if (fetchError || !order) {
+      console.log('Order not found for deletion:', externalReference)
+      return { success: true } // Not an error if order doesn't exist
+    }
+
+    // Delete order items first (foreign key constraint)
+    const { error: itemsError } = await supabaseAdmin
+      .from('order_items')
+      .delete()
+      .eq('order_id', order.id)
+
+    if (itemsError) {
+      console.error('Error deleting order items:', itemsError)
+      throw itemsError
+    }
+
+    // Delete the order
+    const { error: orderError } = await supabaseAdmin
+      .from('orders')
+      .delete()
+      .eq('id', order.id)
+
+    if (orderError) {
+      console.error('Error deleting order:', orderError)
+      throw orderError
+    }
+
+    console.log('✅ Deleted failed order:', externalReference)
+    return { success: true }
+
+  } catch (error) {
+    console.error('Database error deleting order:', error)
+    return { success: false, error }
+  }
+}

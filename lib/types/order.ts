@@ -148,7 +148,7 @@ export interface CreateOrderResponse {
 
 // Payment Brick types for direct payment processing
 export interface ProcessPaymentRequest {
-  orderId: string
+  // Payment data
   token: string
   paymentMethodId: string
   installments: number
@@ -160,14 +160,26 @@ export interface ProcessPaymentRequest {
       number: string
     }
   }
+
+  // Order data
+  externalReference: string
+  items: CartItem[]
+  customerInfo: CustomerInfo
+  shippingAddress: Address
+  subtotal: number
+  tax: number
+  shipping: number
+  discount: number
+  total: number
+  couponCode?: string
 }
 
 export interface ProcessPaymentResponse {
   success: boolean
+  orderId?: string
   paymentId?: string
   status?: PaymentStatus
   statusDetail?: string
-  order?: Order
   error?: string
   message?: string
 }

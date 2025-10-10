@@ -30,7 +30,6 @@ import {
 import { useCart } from "@/lib/context/CartContext"
 import { MEXICAN_STATES } from "@/lib/types/cart"
 import { toast } from "@/lib/hooks/use-toast"
-import { CreateOrderRequest, CreateOrderResponse, Order } from "@/lib/types/order"
 
 // Dynamically import PaymentBrick to avoid SSR issues
 const PaymentBrick = dynamic(
@@ -40,9 +39,6 @@ const PaymentBrick = dynamic(
 
 export default function CheckoutPage() {
   const { state } = useCart()
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [showPayment, setShowPayment] = useState(false)
-  const [pendingOrder, setPendingOrder] = useState<Order | null>(null)
 
   // Form state
   const [contactInfo, setContactInfo] = useState({
@@ -63,6 +59,16 @@ export default function CheckoutPage() {
 
 
   const validateForm = (): boolean => {
+    // Validate cart
+    if (state.items.length === 0) {
+      toast({
+        title: "Carrito vacío",
+        description: "Tu carrito está vacío. Agrega productos antes de proceder.",
+        variant: "destructive"
+      })
+      return false
+    }
+
     // Validate contact info
     if (!contactInfo.name.trim() || !contactInfo.email.trim() || !contactInfo.phone.trim()) {
       toast({
@@ -86,92 +92,6 @@ export default function CheckoutPage() {
     }
 
     return true
-  }
-
-  const handleCheckout = async () => {
-    if (state.items.length === 0) {
-      toast({
-        title: "Carrito vacío",
-        description: "Tu carrito está vacío. Agrega productos antes de proceder.",
-        variant: "destructive"
-      })
-      return
-    }
-
-    if (!validateForm()) {
-      return
-    }
-
-    setIsProcessing(true)
-    try {
-      // Auto-subscribe to email list
-      try {
-        await fetch('/api/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: contactInfo.email })
-        })
-      } catch (error) {
-        console.log('Email subscription failed (non-critical):', error)
-      }
-
-      const orderRequest: CreateOrderRequest = {
-        items: state.items,
-        customerInfo: {
-          ...contactInfo,
-          firstName: contactInfo.name.split(' ')[0] || contactInfo.name,
-          lastName: contactInfo.name.split(' ').slice(1).join(' ') || ''
-        },
-        shippingAddress: {
-          ...shippingAddress,
-          name: contactInfo.name
-        },
-        billingAddress: undefined,
-        useSameAddress: true,
-        couponCode: state.couponCode
-      }
-
-      const response = await fetch('/api/checkout/create-preference', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderRequest)
-      })
-
-      const data: CreateOrderResponse = await response.json()
-
-      if (data.success && data.order) {
-        // Save order data and show payment form
-        setPendingOrder(data.order)
-        setShowPayment(true)
-
-        toast({
-          title: "Información guardada",
-          description: "Ahora completa tu información de pago.",
-        })
-
-        // Scroll to payment section smoothly
-        setTimeout(() => {
-          const paymentSection = document.getElementById('payment-section')
-          if (paymentSection) {
-            paymentSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-          }
-        }, 100)
-      } else {
-        throw new Error(data.message || 'Error al crear el pedido')
-      }
-
-    } catch (error) {
-      console.error("Checkout error:", error)
-      toast({
-        title: "Error de pago",
-        description: "Error al procesar el pedido. Por favor intenta de nuevo.",
-        variant: "destructive"
-      })
-    } finally {
-      setIsProcessing(false)
-    }
   }
 
 
@@ -435,29 +355,29 @@ export default function CheckoutPage() {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
-                <span>${(pendingOrder?.subtotal || state.subtotal).toLocaleString()} MXN</span>
+                <span>${state.subtotal.toLocaleString()} MXN</span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span>Envío</span>
                 <span>
-                  {(pendingOrder?.shipping || state.shipping) === 0 ? (
+                  {state.shipping === 0 ? (
                     <span className="text-green-600 font-medium">Gratis</span>
                   ) : (
-                    `$${(pendingOrder?.shipping || state.shipping).toLocaleString()} MXN`
+                    `$${state.shipping.toLocaleString()} MXN`
                   )}
                 </span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span>IVA (16%)</span>
-                <span>${(pendingOrder?.tax || state.tax).toLocaleString()} MXN</span>
+                <span>${state.tax.toLocaleString()} MXN</span>
               </div>
 
-              {(pendingOrder?.discount || state.discount) > 0 && (
+              {state.discount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>Descuento ({pendingOrder?.couponCode || state.couponCode})</span>
-                  <span>-${(pendingOrder?.discount || state.discount).toLocaleString()} MXN</span>
+                  <span>Descuento ({state.couponCode})</span>
+                  <span>-${state.discount.toLocaleString()} MXN</span>
                 </div>
               )}
 
@@ -465,30 +385,26 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
-                <span>${(pendingOrder?.total || state.total).toLocaleString()} MXN</span>
+                <span>${state.total.toLocaleString()} MXN</span>
               </div>
             </div>
 
-            {/* Checkout Button or Payment Form */}
-            {!showPayment ? (
-              <Button
-                size="lg"
-                className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200"
-                onClick={handleCheckout}
-                disabled={isProcessing}
-              >
-                <CreditCard className="w-5 h-5 mr-2" />
-                {isProcessing ? "Procesando..." : "Continuar a Pago"}
-              </Button>
-            ) : pendingOrder && (
-              <div id="payment-section" className="mb-4">
-                <PaymentBrick
-                  orderId={pendingOrder.externalReference || pendingOrder.id}
-                  amount={pendingOrder.total}
-                  customerEmail={pendingOrder.customerInfo.email}
-                />
-              </div>
-            )}
+            {/* Payment Brick - Always visible */}
+            <div id="payment-section" className="mb-4">
+              <PaymentBrick
+                amount={state.total}
+                customerEmail={contactInfo.email || ""}
+                items={state.items}
+                customerInfo={contactInfo}
+                shippingAddress={shippingAddress}
+                subtotal={state.subtotal}
+                tax={state.tax}
+                shipping={state.shipping}
+                discount={state.discount}
+                couponCode={state.couponCode}
+                validateShippingForm={validateForm}
+              />
+            </div>
 
             {/* Security Info */}
             <div className="space-y-2 text-xs text-muted-foreground">

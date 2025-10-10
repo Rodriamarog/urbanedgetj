@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { Resend } from 'resend'
-import { ProcessPaymentRequest, ProcessPaymentResponse } from '@/lib/types/order'
-import { getOrderByExternalReference, updateOrderPaymentStatus } from '@/lib/supabase/orders'
+import { ProcessPaymentRequest, ProcessPaymentResponse, Order } from '@/lib/types/order'
+import { createOrder, getOrderByExternalReference, updateOrderPaymentStatus, deleteOrder } from '@/lib/supabase/orders'
 import { getOrderNotificationEmail } from '@/lib/email/templates/order-notification'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -22,35 +22,57 @@ export async function POST(request: NextRequest) {
   try {
     const body: ProcessPaymentRequest = await request.json()
 
-    console.log('Processing payment for order:', body.orderId)
+    console.log('Processing payment with order data:', {
+      externalReference: body.externalReference,
+      total: body.total,
+      items: body.items?.length
+    })
 
     // Validate request
-    if (!body.token || !body.orderId || !body.paymentMethodId) {
+    if (!body.token || !body.externalReference || !body.paymentMethodId) {
       return NextResponse.json({
         success: false,
         error: 'Datos incompletos',
-        message: 'Token, order ID, y método de pago son requeridos'
+        message: 'Token, referencia externa, y método de pago son requeridos'
       } as ProcessPaymentResponse, { status: 400 })
     }
 
-    // Fetch order from database to get amount and details
-    const orderResult = await getOrderByExternalReference(body.orderId)
+    // Generate order ID
+    const orderId = `ORDER-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
 
-    if (!orderResult.success || !orderResult.order) {
-      return NextResponse.json({
-        success: false,
-        error: 'Orden no encontrada',
-        message: 'No se encontró la orden en la base de datos'
-      } as ProcessPaymentResponse, { status: 404 })
+    // STEP 1: Create order in database with 'pending' status
+    const order: Order = {
+      id: orderId,
+      externalReference: body.externalReference,
+      items: body.items,
+      customerInfo: body.customerInfo,
+      shippingAddress: body.shippingAddress,
+      useSameAddress: true,
+      subtotal: body.subtotal,
+      tax: body.tax,
+      shipping: body.shipping,
+      discount: body.discount,
+      total: body.total,
+      couponCode: body.couponCode,
+      currency: 'MXN',
+      status: 'pending',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
 
-    const dbOrder = orderResult.order
+    console.log('Creating order in database:', orderId)
+    const orderResult = await createOrder(order)
 
-    // Create payment request for MercadoPago
+    if (!orderResult.success) {
+      console.error('Failed to create order in database')
+      throw new Error('No se pudo crear la orden en la base de datos')
+    }
+
+    // STEP 2: Process payment with MercadoPago
     const paymentData = {
-      transaction_amount: dbOrder.total,
+      transaction_amount: body.total,
       token: body.token,
-      description: `Orden ${body.orderId} - Urban Edge TJ`,
+      description: `Orden ${orderId} - Urban Edge TJ`,
       installments: body.installments,
       payment_method_id: body.paymentMethodId,
       issuer_id: body.issuerId,
@@ -58,18 +80,18 @@ export async function POST(request: NextRequest) {
         email: body.payer.email,
         identification: body.payer.identification
       },
-      external_reference: body.orderId,
+      external_reference: body.externalReference,
       statement_descriptor: 'URBAN EDGE TJ',
       notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhook/mercadopago`,
       metadata: {
-        order_id: body.orderId
+        order_id: orderId
       }
     }
 
     console.log('Creating payment in MercadoPago:', {
       amount: paymentData.transaction_amount,
       method: paymentData.payment_method_id,
-      order: body.orderId
+      externalReference: body.externalReference
     })
 
     // Generate idempotency key for safe retries
@@ -89,99 +111,77 @@ export async function POST(request: NextRequest) {
       status_detail: mpPayment.status_detail
     })
 
-    // Update order in database with payment info
+    // STEP 3: Handle payment result
     const paymentStatus = mpPayment.status as string
-    const orderStatus = paymentStatus === 'approved' ? 'approved' :
-                       paymentStatus === 'rejected' ? 'rejected' :
-                       'processing'
 
-    await updateOrderPaymentStatus(
-      body.orderId,
-      String(mpPayment.id),
-      paymentStatus,
-      orderStatus
-    )
+    if (paymentStatus === 'approved') {
+      // Payment approved - update order status
+      console.log('Payment approved, updating order status')
 
-    // Send email notification if payment approved
-    if (mpPayment.status === 'approved') {
-      console.log('Payment approved, sending email notification')
+      await updateOrderPaymentStatus(
+        body.externalReference,
+        String(mpPayment.id),
+        paymentStatus,
+        'approved'
+      )
 
+      // Send email notification
       try {
-        // Fetch full order with items for email
-        const updatedOrder = await getOrderByExternalReference(body.orderId)
+        console.log('Sending order notification email')
+        const emailContent = getOrderNotificationEmail(order)
 
-        if (updatedOrder.success && updatedOrder.order) {
-          const emailOrder = {
-            id: updatedOrder.order.order_number,
-            externalReference: updatedOrder.order.external_reference,
-            items: updatedOrder.order.order_items.map((item: any) => ({
-              product: item.product_snapshot || {
-                id: item.product_id,
-                name: item.product_name,
-                slug: item.product_slug,
-                images: []
-              },
-              size: item.size,
-              quantity: item.quantity,
-              price: item.unit_price
-            })),
-            customerInfo: {
-              firstName: '',
-              lastName: '',
-              email: updatedOrder.order.customer_email,
-              phone: updatedOrder.order.customer_phone
-            },
-            shippingAddress: {
-              name: updatedOrder.order.shipping_name,
-              addressLine1: updatedOrder.order.shipping_address_line1,
-              addressLine2: updatedOrder.order.shipping_address_line2 || undefined,
-              colonia: updatedOrder.order.shipping_colonia,
-              city: updatedOrder.order.shipping_city,
-              state: updatedOrder.order.shipping_state,
-              postalCode: updatedOrder.order.shipping_postal_code,
-              country: updatedOrder.order.shipping_country
-            },
-            useSameAddress: true,
-            subtotal: updatedOrder.order.subtotal,
-            tax: updatedOrder.order.tax,
-            shipping: updatedOrder.order.shipping_cost,
-            discount: updatedOrder.order.discount,
-            total: updatedOrder.order.total,
-            currency: updatedOrder.order.currency as 'MXN',
-            couponCode: updatedOrder.order.coupon_code || undefined,
-            status: updatedOrder.order.status as any,
-            paymentStatus: updatedOrder.order.payment_status as any,
-            createdAt: new Date(updatedOrder.order.created_at),
-            updatedAt: new Date(updatedOrder.order.updated_at || updatedOrder.order.created_at)
-          }
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
+          subject: emailContent.subject,
+          html: emailContent.html
+        })
 
-          const emailContent = getOrderNotificationEmail(emailOrder)
-
-          await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
-            to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
-            subject: emailContent.subject,
-            html: emailContent.html
-          })
-
-          console.log('Order notification email sent successfully')
-        }
+        console.log('Order notification email sent successfully')
       } catch (emailError) {
         console.error('Failed to send order notification email:', emailError)
         // Don't fail the payment if email fails
       }
-    }
 
-    return NextResponse.json({
-      success: true,
-      paymentId: String(mpPayment.id),
-      status: mpPayment.status as any,
-      statusDetail: mpPayment.status_detail || undefined,
-      message: mpPayment.status === 'approved' ? 'Pago aprobado exitosamente' :
-               mpPayment.status === 'pending' ? 'Pago pendiente de confirmación' :
-               mpPayment.status === 'in_process' ? 'Pago en proceso' :
-               'Pago rechazado'
-    } as ProcessPaymentResponse)
+      return NextResponse.json({
+        success: true,
+        orderId: orderId,
+        paymentId: String(mpPayment.id),
+        status: paymentStatus as any,
+        message: 'Pago aprobado exitosamente'
+      } as ProcessPaymentResponse)
+
+    } else if (paymentStatus === 'rejected') {
+      // Payment rejected - DELETE the order from database
+      console.log('Payment rejected, deleting order from database')
+
+      await deleteOrder(body.externalReference)
+
+      return NextResponse.json({
+        success: false,
+        error: 'Pago rechazado',
+        message: mpPayment.status_detail || 'Tu pago fue rechazado. Por favor intenta con otro método de pago.'
+      } as ProcessPaymentResponse, { status: 400 })
+
+    } else {
+      // Payment pending/in_process - keep order as pending
+      console.log('Payment pending/in_process, keeping order as pending')
+
+      await updateOrderPaymentStatus(
+        body.externalReference,
+        String(mpPayment.id),
+        paymentStatus,
+        'processing'
+      )
+
+      return NextResponse.json({
+        success: true,
+        orderId: orderId,
+        paymentId: String(mpPayment.id),
+        status: paymentStatus as any,
+        message: 'Pago pendiente de confirmación'
+      } as ProcessPaymentResponse)
+    }
 
   } catch (error: any) {
     console.error('Payment processing error:', error)
@@ -191,12 +191,16 @@ export async function POST(request: NextRequest) {
     let statusCode = 500
 
     if (error.cause) {
-      const cause = JSON.parse(JSON.stringify(error.cause))
-      if (cause[0]?.description) {
-        errorMessage = cause[0].description
-      }
-      if (cause[0]?.code) {
-        console.error('MercadoPago error code:', cause[0].code)
+      try {
+        const cause = JSON.parse(JSON.stringify(error.cause))
+        if (cause[0]?.description) {
+          errorMessage = cause[0].description
+        }
+        if (cause[0]?.code) {
+          console.error('MercadoPago error code:', cause[0].code)
+        }
+      } catch (parseError) {
+        console.error('Error parsing error cause:', parseError)
       }
     }
 

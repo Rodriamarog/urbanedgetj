@@ -2,23 +2,57 @@
 
 import { useEffect, useState } from 'react'
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react'
-import { ProcessPaymentRequest, ProcessPaymentResponse } from '@/lib/types/order'
+import { ProcessPaymentRequest, ProcessPaymentResponse, CustomerInfo } from '@/lib/types/order'
+import { CartItem } from '@/lib/types/cart'
 import { toast } from '@/lib/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 interface PaymentBrickProps {
-  orderId: string
   amount: number
   customerEmail: string
-  onSuccess?: (paymentId: string) => void
+
+  // Order data
+  items: CartItem[]
+  customerInfo: {
+    name: string
+    email: string
+    phone: string
+  }
+  shippingAddress: {
+    addressLine1: string
+    addressLine2?: string
+    colonia: string
+    city: string
+    state: string
+    postalCode: string
+    country: string
+  }
+  subtotal: number
+  tax: number
+  shipping: number
+  discount: number
+  couponCode?: string
+
+  // Validation function
+  validateShippingForm: () => boolean
+
+  onSuccess?: (orderId: string, paymentId: string) => void
   onError?: (error: string) => void
 }
 
 export default function PaymentBrick({
-  orderId,
   amount,
   customerEmail,
+  items,
+  customerInfo,
+  shippingAddress,
+  subtotal,
+  tax,
+  shipping,
+  discount,
+  couponCode,
+  validateShippingForm,
   onSuccess,
   onError
 }: PaymentBrickProps) {
@@ -48,12 +82,25 @@ export default function PaymentBrick({
   }, [])
 
   const handlePaymentSubmit = async (formData: any) => {
+    // STEP 1: Validate shipping form FIRST
+    if (!validateShippingForm()) {
+      toast({
+        title: 'Información incompleta',
+        description: 'Completa tu información de envío antes de pagar',
+        variant: 'destructive'
+      })
+      return // Stop - don't process payment
+    }
+
     setIsProcessing(true)
 
     try {
-      // Extract payment data from form
+      // STEP 2: Generate external reference
+      const externalReference = `URBANEDGE-${Date.now()}`
+
+      // STEP 3: Create complete payment request with order data
       const paymentData: ProcessPaymentRequest = {
-        orderId,
+        // Payment data
         token: formData.token,
         paymentMethodId: formData.payment_method_id,
         installments: formData.installments || 1,
@@ -61,12 +108,36 @@ export default function PaymentBrick({
         payer: {
           email: customerEmail,
           identification: formData.payer?.identification
-        }
+        },
+
+        // Order data
+        externalReference,
+        items,
+        customerInfo: {
+          firstName: customerInfo.name.split(' ')[0] || customerInfo.name,
+          lastName: customerInfo.name.split(' ').slice(1).join(' ') || '',
+          email: customerInfo.email,
+          phone: customerInfo.phone
+        },
+        shippingAddress: {
+          ...shippingAddress,
+          name: customerInfo.name
+        },
+        subtotal,
+        tax,
+        shipping,
+        discount,
+        total: amount,
+        couponCode
       }
 
-      console.log('Processing payment:', paymentData)
+      console.log('Processing payment with order data:', {
+        externalReference,
+        amount,
+        items: items.length
+      })
 
-      // Send to backend for processing
+      // STEP 4: Send to backend (creates order + processes payment)
       const response = await fetch('/api/payments/process', {
         method: 'POST',
         headers: {
@@ -77,18 +148,18 @@ export default function PaymentBrick({
 
       const result: ProcessPaymentResponse = await response.json()
 
-      if (result.success && result.paymentId) {
+      if (result.success && result.paymentId && result.orderId) {
         toast({
           title: '¡Pago exitoso!',
           description: 'Tu pago ha sido procesado correctamente.',
         })
 
         if (onSuccess) {
-          onSuccess(result.paymentId)
+          onSuccess(result.orderId, result.paymentId)
         }
 
         // Redirect to success page
-        router.push(`/store/order/success?order_id=${orderId}&payment_id=${result.paymentId}`)
+        router.push(`/store/order/success?order_id=${result.orderId}&payment_id=${result.paymentId}`)
       } else {
         throw new Error(result.message || 'Error al procesar el pago')
       }
@@ -109,7 +180,7 @@ export default function PaymentBrick({
       }
 
       // Redirect to failure page
-      router.push(`/store/order/failure?order_id=${orderId}&error=${encodeURIComponent(errorMessage)}`)
+      router.push(`/store/order/failure?error=${encodeURIComponent(errorMessage)}`)
     } finally {
       setIsProcessing(false)
     }
