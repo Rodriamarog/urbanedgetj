@@ -19,9 +19,11 @@ export default function OrderFailurePage() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
   const errorCode = searchParams.get('error_code')
+  const errorParam = searchParams.get('error')
   const errorMessage = searchParams.get('error_message')
 
   const getErrorMessage = () => {
+    if (errorParam) return decodeURIComponent(errorParam)
     if (errorMessage) return decodeURIComponent(errorMessage)
 
     switch (errorCode) {

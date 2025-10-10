@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -31,18 +32,26 @@ import { MEXICAN_STATES } from "@/lib/types/cart"
 import { toast } from "@/lib/hooks/use-toast"
 import { CreateOrderRequest, CreateOrderResponse, Order } from "@/lib/types/order"
 
+// Dynamically import PaymentBrick to avoid SSR issues
+const PaymentBrick = dynamic(
+  () => import('@/components/checkout/PaymentBrick'),
+  { ssr: false }
+)
+
 export default function CheckoutPage() {
   const { state } = useCart()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [showPayment, setShowPayment] = useState(false)
+  const [pendingOrder, setPendingOrder] = useState<Order | null>(null)
 
   // Form state
   const [contactInfo, setContactInfo] = useState({
+    name: "",
     email: "",
     phone: ""
   })
 
   const [shippingAddress, setShippingAddress] = useState({
-    name: "",
     addressLine1: "",
     addressLine2: "",
     colonia: "",
@@ -55,7 +64,7 @@ export default function CheckoutPage() {
 
   const validateForm = (): boolean => {
     // Validate contact info
-    if (!contactInfo.email.trim() || !contactInfo.phone.trim()) {
+    if (!contactInfo.name.trim() || !contactInfo.email.trim() || !contactInfo.phone.trim()) {
       toast({
         title: "Información incompleta",
         description: "Completa toda la información de contacto.",
@@ -65,7 +74,7 @@ export default function CheckoutPage() {
     }
 
     // Validate shipping address
-    if (!shippingAddress.name.trim() || !shippingAddress.addressLine1.trim() ||
+    if (!shippingAddress.addressLine1.trim() ||
         !shippingAddress.colonia.trim() || !shippingAddress.city.trim() ||
         !shippingAddress.state.trim() || !shippingAddress.postalCode.trim()) {
       toast({
@@ -110,10 +119,13 @@ export default function CheckoutPage() {
         items: state.items,
         customerInfo: {
           ...contactInfo,
-          firstName: shippingAddress.name.split(' ')[0] || shippingAddress.name,
-          lastName: shippingAddress.name.split(' ').slice(1).join(' ') || ''
+          firstName: contactInfo.name.split(' ')[0] || contactInfo.name,
+          lastName: contactInfo.name.split(' ').slice(1).join(' ') || ''
         },
-        shippingAddress: shippingAddress,
+        shippingAddress: {
+          ...shippingAddress,
+          name: contactInfo.name
+        },
         billingAddress: undefined,
         useSameAddress: true,
         couponCode: state.couponCode
@@ -129,17 +141,23 @@ export default function CheckoutPage() {
 
       const data: CreateOrderResponse = await response.json()
 
-      if (data.success && data.order && data.initPoint) {
-        // Clear cart since order was created successfully
-        // TODO: In production, you might want to clear cart only after successful payment
+      if (data.success && data.order) {
+        // Save order data and show payment form
+        setPendingOrder(data.order)
+        setShowPayment(true)
 
         toast({
-          title: "Redirigiendo a MercadoPago",
-          description: "Te llevaremos a la página de pago segura.",
+          title: "Información guardada",
+          description: "Ahora completa tu información de pago.",
         })
 
-        // Redirect to MercadoPago Checkout Pro
-        window.location.href = data.initPoint
+        // Scroll to payment section smoothly
+        setTimeout(() => {
+          const paymentSection = document.getElementById('payment-section')
+          if (paymentSection) {
+            paymentSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+          }
+        }, 100)
       } else {
         throw new Error(data.message || 'Error al crear el pedido')
       }
@@ -211,41 +229,56 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Forms */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Contact and Address Forms */}
           {/* Contact Information */}
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-6 flex items-center">
-              <Mail className="w-5 h-5 mr-2" />
-              Información de Contacto
-            </h2>
+                <h2 className="text-xl font-semibold mb-6 flex items-center">
+                  <Mail className="w-5 h-5 mr-2" />
+                  Información de Contacto
+                </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
+                <Label htmlFor="contactName">Nombre completo *</Label>
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={contactInfo.email}
-                  onChange={(e) => setContactInfo(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="tu@email.com"
+                  id="contactName"
+                  name="contactName"
+                  type="text"
+                  autoComplete="name"
+                  value={contactInfo.name}
+                  onChange={(e) => setContactInfo(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Nombre completo"
                   required
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  value={contactInfo.phone}
-                  onChange={(e) => setContactInfo(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="+52 55 1234 5678"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={contactInfo.email}
+                    onChange={(e) => setContactInfo(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="tu@email.com"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Teléfono *</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={contactInfo.phone}
+                    onChange={(e) => setContactInfo(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder="+52 55 1234 5678"
+                    required
+                  />
+                </div>
               </div>
             </div>
           </Card>
@@ -259,20 +292,7 @@ export default function CheckoutPage() {
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="shippingName">Nombre completo</Label>
-                <Input
-                  id="shippingName"
-                  name="shippingName"
-                  autoComplete="shipping name"
-                  value={shippingAddress.name}
-                  onChange={(e) => setShippingAddress(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Nombre completo para la entrega"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="shippingAddressLine1">Dirección</Label>
+                <Label htmlFor="shippingAddressLine1">Dirección *</Label>
                 <Input
                   id="shippingAddressLine1"
                   name="shippingAddressLine1"
@@ -298,7 +318,7 @@ export default function CheckoutPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="shippingColonia">Colonia</Label>
+                  <Label htmlFor="shippingColonia">Colonia *</Label>
                   <Input
                     id="shippingColonia"
                     name="shippingColonia"
@@ -311,7 +331,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="shippingCity">Ciudad</Label>
+                  <Label htmlFor="shippingCity">Ciudad *</Label>
                   <Input
                     id="shippingCity"
                     name="shippingCity"
@@ -326,7 +346,7 @@ export default function CheckoutPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="shippingState">Estado</Label>
+                  <Label htmlFor="shippingState">Estado *</Label>
                   <Select
                     value={shippingAddress.state}
                     onValueChange={(value) => setShippingAddress(prev => ({ ...prev, state: value }))}
@@ -345,7 +365,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="shippingPostalCode">Código Postal</Label>
+                  <Label htmlFor="shippingPostalCode">Código Postal *</Label>
                   <Input
                     id="shippingPostalCode"
                     name="shippingPostalCode"
@@ -373,7 +393,6 @@ export default function CheckoutPage() {
               </div>
             </div>
           </Card>
-
         </div>
 
         {/* Order Summary */}
@@ -416,29 +435,29 @@ export default function CheckoutPage() {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
-                <span>${state.subtotal.toLocaleString()} MXN</span>
+                <span>${(pendingOrder?.subtotal || state.subtotal).toLocaleString()} MXN</span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span>Envío</span>
                 <span>
-                  {state.shipping === 0 ? (
+                  {(pendingOrder?.shipping || state.shipping) === 0 ? (
                     <span className="text-green-600 font-medium">Gratis</span>
                   ) : (
-                    `$${state.shipping.toLocaleString()} MXN`
+                    `$${(pendingOrder?.shipping || state.shipping).toLocaleString()} MXN`
                   )}
                 </span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span>IVA (16%)</span>
-                <span>${state.tax.toLocaleString()} MXN</span>
+                <span>${(pendingOrder?.tax || state.tax).toLocaleString()} MXN</span>
               </div>
 
-              {state.discount > 0 && (
+              {(pendingOrder?.discount || state.discount) > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>Descuento ({state.couponCode})</span>
-                  <span>-${state.discount.toLocaleString()} MXN</span>
+                  <span>Descuento ({pendingOrder?.couponCode || state.couponCode})</span>
+                  <span>-${(pendingOrder?.discount || state.discount).toLocaleString()} MXN</span>
                 </div>
               )}
 
@@ -446,20 +465,30 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
-                <span>${state.total.toLocaleString()} MXN</span>
+                <span>${(pendingOrder?.total || state.total).toLocaleString()} MXN</span>
               </div>
             </div>
 
-            {/* Checkout Button */}
-            <Button
-              size="lg"
-              className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200"
-              onClick={handleCheckout}
-              disabled={isProcessing}
-            >
-              <CreditCard className="w-5 h-5 mr-2" />
-              {isProcessing ? "Procesando..." : "Comprar Ahora"}
-            </Button>
+            {/* Checkout Button or Payment Form */}
+            {!showPayment ? (
+              <Button
+                size="lg"
+                className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200"
+                onClick={handleCheckout}
+                disabled={isProcessing}
+              >
+                <CreditCard className="w-5 h-5 mr-2" />
+                {isProcessing ? "Procesando..." : "Continuar a Pago"}
+              </Button>
+            ) : pendingOrder && (
+              <div id="payment-section" className="mb-4">
+                <PaymentBrick
+                  orderId={pendingOrder.externalReference || pendingOrder.id}
+                  amount={pendingOrder.total}
+                  customerEmail={pendingOrder.customerInfo.email}
+                />
+              </div>
+            )}
 
             {/* Security Info */}
             <div className="space-y-2 text-xs text-muted-foreground">
@@ -472,7 +501,7 @@ export default function CheckoutPage() {
                 <span>Entrega en 10-15 días hábiles</span>
               </div>
               <div className="mt-3 p-2 bg-muted rounded text-center">
-                <span>Serás redirigido a MercadoPago para completar tu pago de forma segura</span>
+                <span>Múltiples métodos de pago: tarjeta, efectivo (OXXO), transferencia</span>
               </div>
             </div>
           </Card>

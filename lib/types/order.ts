@@ -146,6 +146,32 @@ export interface CreateOrderResponse {
   message?: string
 }
 
+// Payment Brick types for direct payment processing
+export interface ProcessPaymentRequest {
+  orderId: string
+  token: string
+  paymentMethodId: string
+  installments: number
+  issuerId?: string
+  payer: {
+    email: string
+    identification?: {
+      type: string
+      number: string
+    }
+  }
+}
+
+export interface ProcessPaymentResponse {
+  success: boolean
+  paymentId?: string
+  status?: PaymentStatus
+  statusDetail?: string
+  order?: Order
+  error?: string
+  message?: string
+}
+
 export interface OrderStorage {
   orders: Omit<Order, 'items'>[]
   currentOrderId?: string
