@@ -139,7 +139,9 @@ export default function OrderSuccessPage() {
                       {item.product?.images?.[0] && (
                         <div className="relative w-20 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0">
                           <Image
-                            src={item.product.images[0]}
+                            src={typeof item.product.images[0] === 'string'
+                              ? item.product.images[0]
+                              : item.product.images[0].url || item.product.images[0].src}
                             alt={item.product.name}
                             fill
                             className="object-cover"
