@@ -36,6 +36,11 @@ export default function OrderSuccessPage() {
         const response = await fetch(`/api/orders/${orderId}`)
         if (response.ok) {
           const data = await response.json()
+          // Debug: Check what product data we have
+          console.log('Order data:', data)
+          console.log('First item:', data.items?.[0])
+          console.log('Product images:', data.items?.[0]?.product?.images)
+
           // Add estimated delivery date (10-15 business days)
           data.estimatedDelivery = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
           setOrderData(data)
