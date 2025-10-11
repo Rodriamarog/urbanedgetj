@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -27,40 +28,26 @@ export default function OrderSuccessPage() {
   const [orderData, setOrderData] = useState<any>(null)
 
   useEffect(() => {
-    // TODO: In a real app, fetch order details from API
-    // For now, simulate order data
-    if (orderId) {
-      const mockOrderData = {
-        id: orderId,
-        status: 'approved',
-        total: 2500,
-        currency: 'MXN',
-        items: [
-          {
-            name: 'Chaqueta F1 Ferrari Premium',
-            size: 'L',
-            quantity: 1,
-            price: 2150
-          }
-        ],
-        customerInfo: {
-          firstName: 'Juan',
-          lastName: 'Pérez',
-          email: 'juan@example.com'
-        },
-        shippingAddress: {
-          name: 'Juan Pérez',
-          addressLine1: 'Av. Revolución 123',
-          colonia: 'Centro',
-          city: 'Tijuana',
-          state: 'BC',
-          postalCode: '22000'
-        },
-        estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-        createdAt: new Date()
+    // Fetch real order data from API
+    const fetchOrderData = async () => {
+      if (!orderId) return
+
+      try {
+        const response = await fetch(`/api/orders/${orderId}`)
+        if (response.ok) {
+          const data = await response.json()
+          // Add estimated delivery date (10-15 business days)
+          data.estimatedDelivery = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+          setOrderData(data)
+        } else {
+          console.error('Failed to fetch order data')
+        }
+      } catch (error) {
+        console.error('Error fetching order:', error)
       }
-      setOrderData(mockOrderData)
     }
+
+    fetchOrderData()
   }, [orderId])
 
   if (!orderId) {
@@ -138,22 +125,74 @@ export default function OrderSuccessPage() {
               <Separator className="mb-6" />
 
               {/* Items */}
-              {orderData?.items && (
+              {orderData?.items && orderData.items.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="font-medium">Productos</h3>
+                  <h3 className="font-medium mb-4">Productos</h3>
                   {orderData.items.map((item: any, index: number) => (
-                    <div key={index} className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">{item.name}</p>
+                    <div key={index} className="flex gap-4 pb-4 border-b last:border-b-0">
+                      {/* Product Image */}
+                      {item.product?.images?.[0] && (
+                        <div className="relative w-20 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                          <Image
+                            src={item.product.images[0]}
+                            alt={item.product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+
+                      {/* Product Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{item.product?.name || item.name}</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Talla: {item.size?.toUpperCase() || 'N/A'}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          Talla: {item.size.toUpperCase()} × {item.quantity}
+                          Cantidad: {item.quantity}
                         </p>
                       </div>
-                      <span className="font-medium">
-                        ${(item.price * item.quantity).toLocaleString()} MXN
-                      </span>
+
+                      {/* Price */}
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-medium">
+                          ${(item.price * item.quantity).toLocaleString()} MXN
+                        </p>
+                        {item.quantity > 1 && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            ${item.price.toLocaleString()} c/u
+                          </p>
+                        )}
+                      </div>
                     </div>
                   ))}
+
+                  {/* Order Totals */}
+                  <div className="space-y-2 pt-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Subtotal:</span>
+                      <span>${orderData.subtotal?.toLocaleString() || 0} MXN</span>
+                    </div>
+                    {orderData.discount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>Descuento:</span>
+                        <span>-${orderData.discount?.toLocaleString()} MXN</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Envío:</span>
+                      <span>${orderData.shipping?.toLocaleString() || 0} MXN</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">IVA:</span>
+                      <span>${orderData.tax?.toLocaleString() || 0} MXN</span>
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between font-bold text-lg">
+                      <span>Total:</span>
+                      <span>${orderData.total?.toLocaleString()} MXN</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </Card>
@@ -167,10 +206,18 @@ export default function OrderSuccessPage() {
 
               {orderData?.shippingAddress && (
                 <div className="space-y-2">
-                  <p className="font-medium">{orderData.shippingAddress.name}</p>
+                  <p className="font-medium">
+                    {orderData.shippingAddress.name ||
+                     `${orderData.customerInfo?.firstName} ${orderData.customerInfo?.lastName}`}
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     {orderData.shippingAddress.addressLine1}
                   </p>
+                  {orderData.shippingAddress.addressLine2 && (
+                    <p className="text-sm text-muted-foreground">
+                      {orderData.shippingAddress.addressLine2}
+                    </p>
+                  )}
                   <p className="text-sm text-muted-foreground">
                     {orderData.shippingAddress.colonia}, {orderData.shippingAddress.city}
                   </p>
@@ -220,14 +267,14 @@ export default function OrderSuccessPage() {
                   <div className="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
                   <div>
                     <p className="text-sm font-medium">Preparando envío</p>
-                    <p className="text-xs text-muted-foreground">3-5 días hábiles</p>
+                    <p className="text-xs text-muted-foreground">3-7 días hábiles</p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-gray-300 rounded-full mr-3"></div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">En tránsito</p>
-                    <p className="text-xs text-muted-foreground">5-10 días hábiles</p>
+                    <p className="text-xs text-muted-foreground">7-15 días hábiles</p>
                   </div>
                 </div>
                 <div className="flex items-center">
