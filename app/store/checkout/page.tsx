@@ -57,6 +57,24 @@ export default function CheckoutPage() {
     country: "México"
   })
 
+  // DEV ONLY: Autofill test data
+  const autofillTestData = () => {
+    setContactInfo({
+      name: "Juan Pérez García",
+      email: "test@urbanedge.com",
+      phone: "+52 664 123 4567"
+    })
+    setShippingAddress({
+      addressLine1: "Av. Revolución 1234",
+      addressLine2: "Depto 5B",
+      colonia: "Zona Centro",
+      city: "Tijuana",
+      state: "BCN",
+      postalCode: "22000",
+      country: "México"
+    })
+  }
+
 
   const validateForm = (): boolean => {
     // Validate cart
@@ -138,26 +156,36 @@ export default function CheckoutPage() {
             Completa tu pedido de forma segura
           </p>
         </div>
-        <Button variant="outline" asChild>
-          <Link href="/store/cart">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver al Carrito
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          {/* DEV ONLY: Autofill button */}
+          <Button
+            variant="secondary"
+            onClick={autofillTestData}
+            className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          >
+            🧪 Test Autofill
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/store/cart">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Volver al Carrito
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Forms */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-4">
           {/* Contact Information */}
-          <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-6 flex items-center">
+          <Card className="p-4">
+                <h2 className="text-lg font-semibold mb-3 flex items-center">
                   <Mail className="w-5 h-5 mr-2" />
                   Información de Contacto
                 </h2>
 
-                <div className="space-y-4">
-              <div className="space-y-2">
+                <div className="space-y-3">
+              <div className="space-y-1.5">
                 <Label htmlFor="contactName">Nombre completo *</Label>
                 <Input
                   id="contactName"
@@ -171,8 +199,8 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
                   <Label htmlFor="email">Email *</Label>
                   <Input
                     id="email"
@@ -186,7 +214,7 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="phone">Teléfono *</Label>
                   <Input
                     id="phone"
@@ -204,14 +232,14 @@ export default function CheckoutPage() {
           </Card>
 
           {/* Shipping Address */}
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-6 flex items-center">
+          <Card className="p-4">
+            <h2 className="text-lg font-semibold mb-3 flex items-center">
               <MapPin className="w-5 h-5 mr-2" />
               Dirección de Envío
             </h2>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
+            <div className="space-y-3">
+              <div className="space-y-1.5">
                 <Label htmlFor="shippingAddressLine1">Dirección *</Label>
                 <Input
                   id="shippingAddressLine1"
@@ -224,7 +252,7 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="shippingAddressLine2">Apartamento, suite, etc. (opcional)</Label>
                 <Input
                   id="shippingAddressLine2"
@@ -236,8 +264,8 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
                   <Label htmlFor="shippingColonia">Colonia *</Label>
                   <Input
                     id="shippingColonia"
@@ -250,7 +278,7 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="shippingCity">Ciudad *</Label>
                   <Input
                     id="shippingCity"
@@ -264,8 +292,8 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
                   <Label htmlFor="shippingState">Estado *</Label>
                   <Select
                     value={shippingAddress.state}
@@ -284,7 +312,7 @@ export default function CheckoutPage() {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="shippingPostalCode">Código Postal *</Label>
                   <Input
                     id="shippingPostalCode"
@@ -300,7 +328,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="shippingCountry">País</Label>
                 <Input
                   id="shippingCountry"
@@ -317,17 +345,17 @@ export default function CheckoutPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <Card className="p-6 sticky top-4">
-            <h2 className="text-xl font-semibold mb-6 flex items-center">
+          <Card className="p-4 sticky top-4">
+            <h2 className="text-lg font-semibold mb-3 flex items-center">
               <Package className="w-5 h-5 mr-2" />
               Resumen del Pedido
             </h2>
 
             {/* Items */}
-            <div className="space-y-4 mb-6">
+            <div className="space-y-3 mb-4">
               {state.items.map((item) => (
                 <div key={item.id} className="flex items-center space-x-3">
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
                     <Image
                       src={item.product.images[0]?.url}
                       alt={item.product.images[0]?.alt}
@@ -349,10 +377,10 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            <Separator className="mb-6" />
+            <Separator className="mb-4" />
 
             {/* Totals */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
                 <span>${state.subtotal.toLocaleString()} MXN</span>
@@ -386,6 +414,49 @@ export default function CheckoutPage() {
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
                 <span>${state.total.toLocaleString()} MXN</span>
+              </div>
+            </div>
+
+            {/* DEV ONLY: Test Card Info */}
+            <div className="mb-4 p-3 bg-yellow-50 border-2 border-yellow-400 rounded-lg">
+              <p className="text-xs font-bold text-yellow-900 mb-2">🧪 TEST CARD (Copy & Paste):</p>
+              <div className="space-y-1 text-xs font-mono">
+                <div className="flex justify-between">
+                  <span className="text-yellow-800">Card:</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText('5031755734530604')}
+                    className="text-yellow-900 hover:text-yellow-600 underline"
+                  >
+                    5031 7557 3453 0604 📋
+                  </button>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-yellow-800">Expiry:</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText('11/25')}
+                    className="text-yellow-900 hover:text-yellow-600 underline"
+                  >
+                    11/25 📋
+                  </button>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-yellow-800">CVV:</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText('123')}
+                    className="text-yellow-900 hover:text-yellow-600 underline"
+                  >
+                    123 📋
+                  </button>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-yellow-800">Name:</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText('APRO')}
+                    className="text-yellow-900 hover:text-yellow-600 underline"
+                  >
+                    APRO 📋
+                  </button>
+                </div>
               </div>
             </div>
 

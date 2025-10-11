@@ -69,7 +69,10 @@ export async function POST(request: NextRequest) {
     }
 
     // STEP 2: Process payment with MercadoPago
-    const paymentData = {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || ''
+    const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')
+
+    const paymentData: any = {
       transaction_amount: body.total,
       token: body.token,
       description: `Orden ${orderId} - Urban Edge TJ`,
@@ -82,10 +85,14 @@ export async function POST(request: NextRequest) {
       },
       external_reference: body.externalReference,
       statement_descriptor: 'URBAN EDGE TJ',
-      notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhook/mercadopago`,
       metadata: {
         order_id: orderId
       }
+    }
+
+    // Only add notification_url in production (not localhost)
+    if (!isLocalhost && baseUrl) {
+      paymentData.notification_url = `${baseUrl}/api/webhook/mercadopago`
     }
 
     console.log('Creating payment in MercadoPago:', {

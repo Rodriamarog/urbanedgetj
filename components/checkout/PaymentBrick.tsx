@@ -81,7 +81,7 @@ export default function PaymentBrick({
     }
   }, [])
 
-  const handlePaymentSubmit = async (formData: any) => {
+  const handlePaymentSubmit = async (param: any) => {
     // STEP 1: Validate shipping form FIRST
     if (!validateShippingForm()) {
       toast({
@@ -95,12 +95,20 @@ export default function PaymentBrick({
     setIsProcessing(true)
 
     try {
+      // Debug: Log what MercadoPago sends
+      console.log('MercadoPago param:', param)
+
+      // Extract formData from the parameter (it's nested!)
+      const formData = param.formData || param
+
+      console.log('Extracted formData:', formData)
+
       // STEP 2: Generate external reference
       const externalReference = `URBANEDGE-${Date.now()}`
 
       // STEP 3: Create complete payment request with order data
       const paymentData: ProcessPaymentRequest = {
-        // Payment data
+        // Payment data (using exact MercadoPago field names)
         token: formData.token,
         paymentMethodId: formData.payment_method_id,
         installments: formData.installments || 1,
@@ -240,9 +248,9 @@ export default function PaymentBrick({
           paymentMethods: {
             creditCard: 'all',
             debitCard: 'all',
-            ticket: 'all',
-            bankTransfer: 'all',
-            mercadoPago: 'all'
+            ticket: 'all'
+            // Removed: bankTransfer (not enabled in account)
+            // Removed: mercadoPago (requires preferenceId)
           }
         }}
         onSubmit={handlePaymentSubmit}
