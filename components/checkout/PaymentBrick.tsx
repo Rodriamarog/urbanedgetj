@@ -196,6 +196,17 @@ export default function PaymentBrick({
 
   const handleError = async (error: any) => {
     console.error('Payment Brick error:', error)
+    console.error('Error details:', {
+      type: error?.type,
+      cause: error?.cause,
+      message: error?.message
+    })
+
+    // Ignore non-critical errors (like installment fetching failures)
+    if (error?.type === 'non_critical') {
+      console.warn('Non-critical Payment Brick error (ignoring):', error?.message)
+      return
+    }
 
     toast({
       title: 'Error en el formulario de pago',
@@ -237,20 +248,11 @@ export default function PaymentBrick({
           }
         }}
         customization={{
-          visual: {
-            style: {
-              theme: 'default',
-              customVariables: {
-                baseColor: '#16a34a' // Green button color
-              }
-            }
-          },
           paymentMethods: {
-            creditCard: 'all',
-            debitCard: 'all',
-            ticket: 'all'
-            // Removed: bankTransfer (not enabled in account)
-            // Removed: mercadoPago (requires preferenceId)
+            creditCard: "all",
+            debitCard: "all",
+            ticket: "all",
+            maxInstallments: 1
           }
         }}
         onSubmit={handlePaymentSubmit}

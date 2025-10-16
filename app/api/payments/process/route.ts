@@ -101,6 +101,8 @@ export async function POST(request: NextRequest) {
       externalReference: body.externalReference
     })
 
+    console.log('Full payment data being sent to MercadoPago:', JSON.stringify(paymentData, null, 2))
+
     // Generate idempotency key for safe retries
     const idempotencyKey = uuidv4()
 
