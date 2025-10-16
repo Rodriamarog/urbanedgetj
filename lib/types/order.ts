@@ -182,6 +182,8 @@ export interface ProcessPaymentResponse {
   statusDetail?: string
   error?: string
   message?: string
+  transactionDetails?: any // MercadoPago transaction_details (external_resource_url, etc.)
+  pointOfInteraction?: any // MercadoPago point_of_interaction (transaction_data with ticket_url, etc.)
 }
 
 export interface OrderStorage {

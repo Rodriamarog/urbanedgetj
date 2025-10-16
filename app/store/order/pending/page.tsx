@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -14,27 +14,98 @@ import {
   RefreshCw,
   AlertCircle,
   CheckCircle2,
-  MapPin
+  MapPin,
+  Download,
+  Copy,
+  Check
 } from "lucide-react"
 
 export default function OrderPendingPage() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
   const paymentMethod = searchParams.get('payment_method')
+  const transactionDetailsParam = searchParams.get('transaction_details')
+
+  const [copied, setCopied] = useState(false)
+  const [paymentData, setPaymentData] = useState<any>(null)
+
+  useEffect(() => {
+    if (transactionDetailsParam) {
+      try {
+        const parsed = JSON.parse(transactionDetailsParam)
+        setPaymentData(parsed)
+        console.log('Payment data:', parsed)
+      } catch (e) {
+        console.error('Failed to parse transaction details:', e)
+      }
+    }
+  }, [transactionDetailsParam])
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  // Extract OXXO reference from payment data
+  const getOxxoReference = () => {
+    if (!paymentData) return null
+
+    // MercadoPago structure for OXXO payments:
+    // - transactionDetails.payment_method_reference_id = OXXO reference code (e.g., "6007066328")
+    // - transactionDetails.external_resource_url = ticket URL
+    // - transactionDetails.barcode.content = barcode content
+    const referenceCode = paymentData.transactionDetails?.payment_method_reference_id
+    const ticketUrl = paymentData.transactionDetails?.external_resource_url
+    const barcodeContent = paymentData.transactionDetails?.barcode?.content
+
+    return { referenceCode, ticketUrl, barcodeContent }
+  }
+
+  const oxxoData = getOxxoReference()
+
+  // Get payment method display name
+  const getPaymentMethodName = () => {
+    const methodMap: Record<string, string> = {
+      'oxxo': 'OXXO',
+      '7eleven': '7-Eleven',
+      'santander': 'Santander',
+      'farmaciasyza': 'Farmacias Yza',
+      'circlek': 'Circle K',
+      'extra': 'Extra',
+      'kiosko': 'Kiosko',
+      'soriana': 'Soriana',
+      'calimax': 'Calimax'
+    }
+    return methodMap[paymentMethod || ''] || 'efectivo'
+  }
 
   const getPaymentMethodInfo = () => {
+    const methodName = getPaymentMethodName()
+
     switch (paymentMethod) {
+      case 'oxxo':
+      case '7eleven':
+      case 'santander':
+      case 'farmaciasyza':
+      case 'circlek':
+      case 'extra':
+      case 'kiosko':
+      case 'soriana':
+      case 'calimax':
       case 'ticket':
         return {
-          title: 'Pago en OXXO',
-          description: 'Tu pedido está reservado. Tienes 3 días para completar el pago en cualquier tienda OXXO.',
+          title: `Pago en ${methodName}`,
+          description: `Tu pedido está reservado. Completa el pago en ${methodName}.`,
           instructions: [
-            'Ve a cualquier tienda OXXO',
-            'Proporciona el código de barras al cajero',
-            'Paga el monto exacto',
-            'Guarda tu comprobante'
+            `Acude a cualquier tienda ${methodName}`,
+            'Indica al cajero que vas a realizar un pago de servicio',
+            'Proporciona el código de referencia o muestra el código de barras',
+            'Realiza el pago en efectivo',
+            'Conserva tu comprobante de pago',
+            'Recibirás un email de confirmación cuando se procese tu pago'
           ],
-          timeLimit: '3 días'
+          timeLimit: paymentMethod === 'oxxo' ? '48 horas' : '1 hora'
         }
       case 'bank_transfer':
         return {
@@ -48,28 +119,19 @@ export default function OrderPendingPage() {
           ],
           timeLimit: '24 horas'
         }
-      case 'rapipago':
-        return {
-          title: 'Pago en efectivo',
-          description: 'Tu pedido está reservado. Completa el pago en efectivo en los puntos autorizados.',
-          instructions: [
-            'Ve al punto de pago seleccionado',
-            'Proporciona el código de referencia',
-            'Paga el monto exacto',
-            'Conserva tu comprobante'
-          ],
-          timeLimit: '2 días'
-        }
       default:
         return {
-          title: 'Pago pendiente',
-          description: 'Tu pago está siendo procesado. Te notificaremos cuando esté confirmado.',
+          title: 'Pago en efectivo',
+          description: 'Tu pedido está reservado. Completa el pago en efectivo en el punto autorizado.',
           instructions: [
-            'El pago puede tardar algunos minutos en procesarse',
-            'Revisa tu email para actualizaciones',
-            'No realices otro pago por el mismo pedido'
+            'Acude al punto de pago que seleccionaste',
+            'Indica al cajero que vas a realizar un pago de servicio',
+            'Proporciona el código de referencia o muestra el código de barras',
+            'Realiza el pago en efectivo',
+            'Conserva tu comprobante de pago',
+            'Recibirás un email de confirmación cuando se procese tu pago'
           ],
-          timeLimit: '1 hora'
+          timeLimit: '48 horas'
         }
     }
   }
@@ -140,22 +202,47 @@ export default function OrderPendingPage() {
             ))}
           </div>
 
-          {paymentMethod === 'ticket' && (
-            <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-              <div className="text-center">
-                <div className="mb-2">
-                  <div className="inline-block bg-white p-4 rounded border-2 border-dashed">
-                    <p className="text-xs text-muted-foreground mb-1">Código de barras</p>
-                    <div className="w-48 h-8 bg-black bg-opacity-10 rounded flex items-center justify-center">
-                      <span className="text-xs font-mono">||||| |||| ||||| ||||</span>
-                    </div>
-                    <p className="text-xs font-mono mt-1">4567 8901 2345 6789</p>
+          {oxxoData && oxxoData.referenceCode && (
+            <div className="mt-6 space-y-4">
+              {/* Reference Code */}
+              <div className="p-4 bg-gray-100 rounded-lg">
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground mb-2">Código de referencia</p>
+                  <div className="flex items-center justify-center gap-2">
+                    <p className="text-2xl font-bold font-mono tracking-wider">
+                      {oxxoData.referenceCode}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(oxxoData.referenceCode)}
+                    >
+                      {copied ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </Button>
                   </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Proporciona este código al cajero
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Muestra este código al cajero en OXXO
-                </p>
               </div>
+
+              {/* Download Ticket Button */}
+              {oxxoData.ticketUrl && (
+                <div className="flex justify-center">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => window.open(oxxoData.ticketUrl, '_blank')}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Descargar ficha de pago
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </Card>
