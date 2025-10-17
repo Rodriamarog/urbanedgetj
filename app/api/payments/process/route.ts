@@ -142,14 +142,25 @@ export async function POST(request: NextRequest) {
         console.log('Sending order notification email')
         const emailContent = getOrderNotificationEmail(order)
 
+        // Send to store owner
         await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
           to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
           subject: emailContent.subject,
           html: emailContent.html
         })
+        console.log('Order notification email sent to store owner')
 
-        console.log('Order notification email sent successfully')
+        // Send to customer
+        if (body.customerInfo?.email) {
+          await resend.emails.send({
+            from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+            to: body.customerInfo.email,
+            subject: emailContent.subject,
+            html: emailContent.html
+          })
+          console.log('Order confirmation email sent to customer:', body.customerInfo.email)
+        }
       } catch (emailError) {
         console.error('Failed to send order notification email:', emailError)
         // Don't fail the payment if email fails
