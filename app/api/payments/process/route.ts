@@ -1,3 +1,6 @@
+// REVERTED TO COMMIT 5b35266 - Working version before cash payments implementation
+// Card payments were working at this commit (2025-10-16)
+
 import { NextRequest, NextResponse } from 'next/server'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { Resend } from 'resend'
@@ -28,12 +31,12 @@ export async function POST(request: NextRequest) {
       items: body.items?.length
     })
 
-    // Validate request - token is only required for card payments
-    if (!body.externalReference || !body.paymentMethodId) {
+    // Validate request
+    if (!body.token || !body.externalReference || !body.paymentMethodId) {
       return NextResponse.json({
         success: false,
         error: 'Datos incompletos',
-        message: 'Referencia externa y método de pago son requeridos'
+        message: 'Token, referencia externa, y método de pago son requeridos'
       } as ProcessPaymentResponse, { status: 400 })
     }
 
@@ -74,8 +77,11 @@ export async function POST(request: NextRequest) {
 
     const paymentData: any = {
       transaction_amount: body.total,
+      token: body.token,
       description: `Orden ${orderId} - Urban Edge TJ`,
+      installments: body.installments,
       payment_method_id: body.paymentMethodId,
+      issuer_id: body.issuerId,
       payer: {
         email: body.payer.email,
         identification: body.payer.identification
@@ -87,19 +93,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Add card-specific fields only for card payments
-    if (body.token) {
-      paymentData.token = body.token
-      paymentData.installments = body.installments || 1
-      if (body.issuerId) {
-        paymentData.issuer_id = body.issuerId
-      }
+    // Only add notification_url in production (not localhost)
+    if (!isLocalhost && baseUrl) {
+      paymentData.notification_url = `${baseUrl}/api/webhook/mercadopago`
     }
-
-    // Temporarily disable notification_url to test if it's causing the error
-    // if (!isLocalhost && baseUrl) {
-    //   paymentData.notification_url = `${baseUrl}/api/webhook/mercadopago`
-    // }
 
     console.log('Creating payment in MercadoPago:', {
       amount: paymentData.transaction_amount,
@@ -123,12 +120,8 @@ export async function POST(request: NextRequest) {
     console.log('MercadoPago payment response:', {
       id: mpPayment.id,
       status: mpPayment.status,
-      status_detail: mpPayment.status_detail,
-      transaction_details: mpPayment.transaction_details,
-      point_of_interaction: mpPayment.point_of_interaction
+      status_detail: mpPayment.status_detail
     })
-
-    console.log('Full MercadoPago response:', JSON.stringify(mpPayment, null, 2))
 
     // STEP 3: Handle payment result
     const paymentStatus = mpPayment.status as string
@@ -193,18 +186,13 @@ export async function POST(request: NextRequest) {
         'processing'
       )
 
-      // For pending payments (OXXO, etc.), include transaction details
-      const response: ProcessPaymentResponse = {
+      return NextResponse.json({
         success: true,
         orderId: orderId,
         paymentId: String(mpPayment.id),
         status: paymentStatus as any,
-        message: 'Pago pendiente de confirmación',
-        transactionDetails: mpPayment.transaction_details,
-        pointOfInteraction: mpPayment.point_of_interaction
-      }
-
-      return NextResponse.json(response)
+        message: 'Pago pendiente de confirmación'
+      } as ProcessPaymentResponse)
     }
 
   } catch (error: any) {
