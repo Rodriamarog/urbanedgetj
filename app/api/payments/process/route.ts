@@ -96,10 +96,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Only add notification_url in production (not localhost)
-    if (!isLocalhost && baseUrl) {
-      paymentData.notification_url = `${baseUrl}/api/webhook/mercadopago`
-    }
+    // Temporarily disable notification_url to test if it's causing the error
+    // if (!isLocalhost && baseUrl) {
+    //   paymentData.notification_url = `${baseUrl}/api/webhook/mercadopago`
+    // }
 
     console.log('Creating payment in MercadoPago:', {
       amount: paymentData.transaction_amount,
