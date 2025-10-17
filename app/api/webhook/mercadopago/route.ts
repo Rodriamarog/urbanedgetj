@@ -26,7 +26,8 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 function verifySignature(
   signature: string,
-  dataToValidate: string,
+  requestId: string,
+  dataId: string,
   secret: string
 ): boolean {
   try {
@@ -46,13 +47,21 @@ function verifySignature(
       return false
     }
 
-    // Create the string to validate
-    const stringToValidate = `id:${dataToValidate};request-id:${timestamp};`
+    // Create the string to validate per MercadoPago docs
+    // Format: id:[data.id];request-id:[x-request-id];ts:[ts];
+    const stringToValidate = `id:${dataId};request-id:${requestId};ts:${timestamp};`
 
     // Generate HMAC
     const hmac = crypto.createHmac('sha256', secret)
     hmac.update(stringToValidate)
     const generatedSignature = hmac.digest('hex')
+
+    console.log('Signature validation:', {
+      stringToValidate,
+      generatedSignature,
+      expectedSignature: v1,
+      match: generatedSignature === v1
+    })
 
     return generatedSignature === v1
   } catch (error) {
@@ -142,8 +151,12 @@ export async function POST(request: NextRequest) {
     // Verify signature if secret is configured
     const webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET
     if (webhookSecret && webhookSecret !== 'your_webhook_secret_here') {
+      if (!requestId) {
+        console.error('Missing x-request-id header for signature validation')
+        return NextResponse.json({ error: 'Missing request ID' }, { status: 400 })
+      }
       const dataId = webhookData.data?.id || webhookData.id
-      if (!verifySignature(signature, dataId, webhookSecret)) {
+      if (!verifySignature(signature, requestId, dataId, webhookSecret)) {
         console.error('Invalid webhook signature')
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
       }
