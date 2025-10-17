@@ -302,13 +302,25 @@ export async function POST(request: NextRequest) {
 
               const emailContent = getOrderNotificationEmail(orderForEmail)
 
+              // Send email to store owner
               await resend.emails.send({
                 from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
                 to: process.env.ORDER_NOTIFICATION_EMAIL || 'urbanedgetj@gmail.com',
                 subject: emailContent.subject,
                 html: emailContent.html
               })
-              console.log('Order notification email sent successfully')
+              console.log('Order notification email sent to store owner')
+
+              // Send email to customer
+              if (dbOrder.customer_email) {
+                await resend.emails.send({
+                  from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+                  to: dbOrder.customer_email,
+                  subject: emailContent.subject,
+                  html: emailContent.html
+                })
+                console.log('Order confirmation email sent to customer:', dbOrder.customer_email)
+              }
             } else {
               console.error('Could not fetch order for email:', externalReference)
               // Send basic notification without full order details
