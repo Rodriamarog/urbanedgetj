@@ -113,8 +113,8 @@ export const calculateCartTotals = (items: CartItem[], couponCode?: string) => {
   // Subtotal (base price without IVA for display)
   const subtotal = basePrice
 
-  // Calculate shipping (free over $1500 MXN)
-  const shipping = priceWithIVA >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_COST
+  // Calculate shipping (always free)
+  const shipping = 0 // Free shipping for all orders
 
   // Total before discount = base + IVA + shipping
   const totalBeforeDiscount = priceWithIVA + shipping

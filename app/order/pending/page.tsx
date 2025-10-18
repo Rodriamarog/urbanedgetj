@@ -333,10 +333,10 @@ export default function OrderPendingPage() {
           <p className="text-sm">
             Contáctanos en{" "}
             <a
-              href="mailto:soporte@urbanedgetj.com"
+              href="mailto:urbanedgetj@gmail.com"
               className="text-primary hover:underline"
             >
-              soporte@urbanedgetj.com
+              urbanedgetj@gmail.com
             </a>
           </p>
         </div>

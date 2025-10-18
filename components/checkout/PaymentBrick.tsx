@@ -289,6 +289,15 @@ export default function PaymentBrick({
             debitCard: "all",
             ticket: "all",
             maxInstallments: 1
+          },
+          visual: {
+            style: {
+              theme: 'default',
+              customVariables: {
+                baseColor: '#16a34a',
+                // Green color for the button (matches your brand primary green)
+              }
+            }
           }
         }}
         onSubmit={handlePaymentSubmit}

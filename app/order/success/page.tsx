@@ -329,7 +329,7 @@ export default function OrderSuccessPage() {
                     <span>Te enviaremos un email de confirmación</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Si tienes preguntas, contáctanos en soporte@urbanedgetj.com
+                    Si tienes preguntas, contáctanos en urbanedgetj@gmail.com
                   </p>
                 </div>
               </div>
