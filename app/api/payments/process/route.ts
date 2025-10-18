@@ -100,7 +100,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Only add notification_url in production (not localhost)
-    if (!isLocalhost && baseUrl) {
+    // NOTE: Disabled for cash payments (OXXO, etc.) as it causes MercadoPago internal_error
+    // Configure webhooks through MercadoPago dashboard instead: https://www.mercadopago.com.mx/developers/panel/app
+    if (!isLocalhost && baseUrl && body.token) {
+      // Only add notification_url for card payments, not cash/ticket payments
       paymentData.notification_url = `${baseUrl}/api/webhook/mercadopago`
     }
 
