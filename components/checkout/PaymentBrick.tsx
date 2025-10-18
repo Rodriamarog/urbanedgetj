@@ -110,12 +110,9 @@ export default function PaymentBrick({
       const externalReference = `URBANEDGE-${Date.now()}`
 
       // STEP 3: Create complete payment request with order data
-      const paymentData: ProcessPaymentRequest = {
-        // Payment data (using exact MercadoPago field names)
-        token: formData.token,
+      const paymentData: any = {
+        // Common payment data
         paymentMethodId: formData.payment_method_id,
-        installments: formData.installments || 1,
-        issuerId: formData.issuer_id,
         payer: {
           email: customerEmail,
           identification: formData.payer?.identification
@@ -142,6 +139,15 @@ export default function PaymentBrick({
         couponCode
       }
 
+      // Add card-specific fields only for card payments
+      if (formData.token) {
+        paymentData.token = formData.token
+        paymentData.installments = formData.installments || 1
+        if (formData.issuer_id) {
+          paymentData.issuerId = formData.issuer_id
+        }
+      }
+
       console.log('Processing payment with order data:', {
         externalReference,
         amount,
@@ -160,17 +166,43 @@ export default function PaymentBrick({
       const result: ProcessPaymentResponse = await response.json()
 
       if (result.success && result.paymentId && result.orderId) {
-        toast({
-          title: '¡Pago exitoso!',
-          description: 'Tu pago ha sido procesado correctamente.',
-        })
+        // Check if payment is pending (OXXO, cash payments)
+        if (result.status === 'pending') {
+          toast({
+            title: 'Pago pendiente',
+            description: 'Completa tu pago para confirmar tu pedido.',
+          })
 
-        if (onSuccess) {
-          onSuccess(result.orderId, result.paymentId)
+          // Redirect to pending page with transaction details
+          const params = new URLSearchParams({
+            order_id: result.orderId,
+            payment_id: result.paymentId,
+            payment_method: formData.payment_method_id
+          })
+
+          // Add transaction details if available
+          if (result.transactionDetails || result.pointOfInteraction) {
+            params.append('transaction_details', JSON.stringify({
+              transactionDetails: result.transactionDetails,
+              pointOfInteraction: result.pointOfInteraction
+            }))
+          }
+
+          router.push(`/store/order/pending?${params.toString()}`)
+        } else {
+          // Payment approved
+          toast({
+            title: '¡Pago exitoso!',
+            description: 'Tu pago ha sido procesado correctamente.',
+          })
+
+          if (onSuccess) {
+            onSuccess(result.orderId, result.paymentId)
+          }
+
+          // Redirect to success page
+          router.push(`/store/order/success?order_id=${result.orderId}&payment_id=${result.paymentId}`)
         }
-
-        // Redirect to success page
-        router.push(`/store/order/success?order_id=${result.orderId}&payment_id=${result.paymentId}`)
       } else {
         throw new Error(result.message || 'Error al procesar el pago')
       }

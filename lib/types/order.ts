@@ -149,9 +149,9 @@ export interface CreateOrderResponse {
 // Payment Brick types for direct payment processing
 export interface ProcessPaymentRequest {
   // Payment data
-  token: string
+  token?: string // Optional - only required for card payments
   paymentMethodId: string
-  installments: number
+  installments?: number
   issuerId?: string
   payer: {
     email: string
