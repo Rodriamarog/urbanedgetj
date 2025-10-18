@@ -6,11 +6,15 @@ import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { FacebookPixelProvider } from "../components/FacebookPixel"
 import { Toaster } from "@/components/ui/toaster"
+import { Header } from "./components-store/Header"
+import { Footer } from "./components-store/Footer"
+import { CartProvider } from "@/lib/context/CartContext"
+import { WishlistProvider } from "@/lib/context/WishlistContext"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Urban Edge TJ - Chaquetas F1 Premium",
-  description: "Lista de espera para chaquetas F1 premium inspiradas en la Fórmula 1",
+  title: "Urban Edge TJ Store - Premium Streetwear Mexicano",
+  description: "Tienda oficial de Urban Edge TJ - Ropa urbana premium, chaquetas F1, hoodies y streetwear exclusivo mexicano",
   generator: "v0.app",
 }
 
@@ -23,8 +27,18 @@ export default function RootLayout({
     <html lang="es">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <FacebookPixelProvider>
-          <Suspense fallback={null}>{children}</Suspense>
-          <Toaster />
+          <CartProvider>
+            <WishlistProvider>
+              <div className="min-h-screen flex flex-col bg-background">
+                <Header />
+                <main className="flex-1">
+                  <Suspense fallback={null}>{children}</Suspense>
+                </main>
+                <Footer />
+              </div>
+              <Toaster />
+            </WishlistProvider>
+          </CartProvider>
         </FacebookPixelProvider>
         <Analytics />
       </body>

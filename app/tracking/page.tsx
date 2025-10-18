@@ -109,7 +109,7 @@ export default function TrackingPage() {
           </p>
         </div>
         <Button variant="outline" asChild>
-          <Link href="/store">
+          <Link href="/">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Volver a Inicio
           </Link>
@@ -342,7 +342,7 @@ export default function TrackingPage() {
             ¿No encuentras tu número de rastreo o tienes problemas?
           </p>
           <Button variant="outline" asChild>
-            <Link href="/store/contact">
+            <Link href="/contact">
               Contáctanos
             </Link>
           </Button>

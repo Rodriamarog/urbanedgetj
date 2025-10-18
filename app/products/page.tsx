@@ -21,7 +21,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   ) || product.images.find((img: any) => img.isPrimary) || product.images[0]
 
   return (
-    <Link href={`/store/products/${product.slug}?gender=female`} className="block h-full">
+    <Link href={`/products/${product.slug}?gender=female`} className="block h-full">
       <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 py-0 flex flex-col h-full cursor-pointer">
         <div className="relative overflow-hidden">
           <div className="aspect-square relative">

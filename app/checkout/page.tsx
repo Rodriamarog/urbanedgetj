@@ -126,13 +126,13 @@ export default function CheckoutPage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Button asChild>
-              <Link href="/store/products">
+              <Link href="/products">
                 <Package className="w-5 h-5 mr-2" />
                 Explorar Productos
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/store/cart">
+              <Link href="/cart">
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Ver Carrito
               </Link>
@@ -166,7 +166,7 @@ export default function CheckoutPage() {
             🧪 Test Autofill
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/store/cart">
+            <Link href="/cart">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Volver al Carrito
             </Link>

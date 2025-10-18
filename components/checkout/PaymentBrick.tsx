@@ -188,7 +188,7 @@ export default function PaymentBrick({
             }))
           }
 
-          router.push(`/store/order/pending?${params.toString()}`)
+          router.push(`/order/pending?${params.toString()}`)
         } else {
           // Payment approved
           toast({
@@ -201,7 +201,7 @@ export default function PaymentBrick({
           }
 
           // Redirect to success page
-          router.push(`/store/order/success?order_id=${result.orderId}&payment_id=${result.paymentId}`)
+          router.push(`/order/success?order_id=${result.orderId}&payment_id=${result.paymentId}`)
         }
       } else {
         throw new Error(result.message || 'Error al procesar el pago')
@@ -223,7 +223,7 @@ export default function PaymentBrick({
       }
 
       // Redirect to failure page
-      router.push(`/store/order/failure?error=${encodeURIComponent(errorMessage)}`)
+      router.push(`/order/failure?error=${encodeURIComponent(errorMessage)}`)
     } finally {
       setIsProcessing(false)
     }

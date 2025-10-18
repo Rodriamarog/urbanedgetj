@@ -7,7 +7,7 @@ import { ShoppingCart } from "lucide-react"
 
 import { Product } from "@/lib/types/product"
 import { useCart } from "@/lib/context/CartContext"
-import { useCartAnimation, CartAnimation } from "../../../components/CartAnimation"
+import { useCartAnimation, CartAnimation } from "../../../components-store/CartAnimation"
 
 interface AddToCartSectionProps {
   product: Product
@@ -40,7 +40,7 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
 
       // Fallback: try to find any cart icon if the main one isn't visible
       if (!cartIcon || cartIcon.offsetParent === null) {
-        cartIcon = document.querySelector('[href="/store/cart"]') as HTMLElement
+        cartIcon = document.querySelector('[href="/cart"]') as HTMLElement
       }
 
       if (buttonRef.current && cartIcon) {
@@ -61,7 +61,7 @@ export default function AddToCartSection({ product, selectedSize }: AddToCartSec
       setQuantity(1)
 
       // Redirect to cart page
-      router.push('/store/cart')
+      router.push('/cart')
     } catch (error) {
       console.error('Error adding to cart:', error)
     } finally {

@@ -67,7 +67,7 @@ export default function OrderSuccessPage() {
             No se pudo encontrar la información de tu pedido.
           </p>
           <Button asChild>
-            <Link href="/store">
+            <Link href="/">
               <Home className="w-5 h-5 mr-2" />
               Volver a la tienda
             </Link>
@@ -308,13 +308,13 @@ export default function OrderSuccessPage() {
               {/* Actions */}
               <div className="space-y-3">
                 <Button className="w-full" asChild>
-                  <Link href="/store/products">
+                  <Link href="/products">
                     <ShoppingBag className="w-4 h-4 mr-2" />
                     Seguir comprando
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href="/store">
+                  <Link href="/">
                     <Home className="w-4 h-4 mr-2" />
                     Volver al inicio
                   </Link>

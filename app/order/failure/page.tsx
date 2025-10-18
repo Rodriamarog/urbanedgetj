@@ -164,14 +164,14 @@ export default function OrderFailurePage() {
         {/* Actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Button className="w-full" asChild>
-            <Link href="/store/checkout">
+            <Link href="/checkout">
               <RefreshCw className="w-4 h-4 mr-2" />
               Intentar de nuevo
             </Link>
           </Button>
 
           <Button variant="outline" className="w-full" asChild>
-            <Link href="/store/cart">
+            <Link href="/cart">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Volver al carrito
             </Link>
@@ -181,14 +181,14 @@ export default function OrderFailurePage() {
         {/* Additional Actions */}
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Button variant="ghost" className="w-full" asChild>
-            <Link href="/store/products">
+            <Link href="/products">
               <ShoppingCart className="w-4 h-4 mr-2" />
               Seguir comprando
             </Link>
           </Button>
 
           <Button variant="ghost" className="w-full" asChild>
-            <Link href="/store">
+            <Link href="/">
               <Home className="w-4 h-4 mr-2" />
               Volver al inicio
             </Link>

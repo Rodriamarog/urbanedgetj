@@ -95,7 +95,7 @@ const CartItemCard: React.FC<{ item: CartItem }> = ({ item }) => {
             <div className="flex-1">
               <h3 className="font-semibold text-lg text-foreground mb-1">
                 <Link
-                  href={`/store/products/${item.product.slug}`}
+                  href={`/products/${item.product.slug}`}
                   className="hover:text-primary transition-colors"
                 >
                   {item.product.name}
@@ -263,7 +263,7 @@ const CartSummary: React.FC = () => {
         className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200"
         asChild
       >
-        <Link href="/store/checkout">
+        <Link href="/checkout">
           <CreditCard className="w-5 h-5 mr-2" />
           Proceder al Checkout
         </Link>
@@ -301,13 +301,13 @@ const EmptyCart: React.FC = () => {
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Button size="lg" asChild>
-          <Link href="/store/products">
+          <Link href="/products">
             <ShoppingBag className="w-5 h-5 mr-2" />
             Explorar Productos
           </Link>
         </Button>
         <Button variant="outline" size="lg" asChild>
-          <Link href="/store">
+          <Link href="/">
             <Home className="w-5 h-5 mr-2" />
             Ir a Inicio
           </Link>
@@ -322,7 +322,7 @@ const EmptyCart: React.FC = () => {
         <div className="flex flex-wrap gap-3 justify-center">
           {PRODUCT_CATEGORIES.map((category) => (
             <Button key={category.id} variant="outline" asChild>
-              <Link href={`/store/products?category=${category.id}`}>
+              <Link href={`/products?category=${category.id}`}>
                 {category.name}
               </Link>
             </Button>
@@ -371,7 +371,7 @@ export default function CartPage() {
         </div>
 
         <Button variant="outline" asChild>
-          <Link href="/store/products">
+          <Link href="/products">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Seguir Comprando
           </Link>

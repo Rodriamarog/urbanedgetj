@@ -18,10 +18,10 @@ import {
 import { useCart } from "@/lib/context/CartContext"
 
 const navigationItems = [
-  { name: "Inicio", href: "/store", icon: Home },
-  { name: "Productos", href: "/store/products", icon: Package },
-  { name: "Rastrear Pedido", href: "/store/tracking", icon: Truck },
-  { name: "Contacto", href: "/store/contact", icon: Mail },
+  { name: "Inicio", href: "/", icon: Home },
+  { name: "Productos", href: "/products", icon: Package },
+  { name: "Rastrear Pedido", href: "/tracking", icon: Truck },
+  { name: "Contacto", href: "/contact", icon: Mail },
 ]
 
 export function Header() {
@@ -33,7 +33,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/store" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2">
           <Image
             src="/logo.jpg"
             alt="Urban Edge TJ"
@@ -69,7 +69,7 @@ export function Header() {
             className="relative p-2 hover:bg-accent"
             asChild
           >
-            <Link href="/store/cart">
+            <Link href="/cart">
               <ShoppingCart className="h-5 w-5" data-cart-icon />
               {cartItemCount > 0 && (
                 <Badge
@@ -129,7 +129,7 @@ export function Header() {
                 {/* Mobile Cart Link */}
                 <div className="mt-8 pt-8 border-t border-border">
                   <Link
-                    href="/store/cart"
+                    href="/cart"
                     className="flex items-center space-x-3 text-lg font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 py-3 px-2 rounded-md hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

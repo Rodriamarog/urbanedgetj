@@ -20,16 +20,16 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     <div className="space-y-8">
       {/* Breadcrumbs */}
       <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-        <Link href="/store" className="hover:text-foreground transition-colors">
+        <Link href="/" className="hover:text-foreground transition-colors">
           <Home className="w-4 h-4" />
         </Link>
         <span>/</span>
-        <Link href="/store/products" className="hover:text-foreground transition-colors">
+        <Link href="/products" className="hover:text-foreground transition-colors">
           <Package className="w-4 h-4" />
         </Link>
         <span>/</span>
         <Link
-          href={`/store/products?category=${product.category}`}
+          href={`/products?category=${product.category}`}
           className="hover:text-foreground transition-colors"
         >
           {categoryName}

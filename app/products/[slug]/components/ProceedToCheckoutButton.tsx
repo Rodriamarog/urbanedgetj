@@ -27,7 +27,7 @@ export default function ProceedToCheckoutButton({ product, selectedSize }: Proce
     addItem(product, selectedSize, 1)
 
     // Navigate to checkout
-    router.push('/store/checkout')
+    router.push('/checkout')
   }
 
   return (

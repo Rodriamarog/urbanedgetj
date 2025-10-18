@@ -39,17 +39,17 @@ const socialLinks = [
 ]
 
 const quickLinks = [
-  { name: "Rastrea tu Pedido", href: "/store/tracking" },
-  { name: "Política de Privacidad", href: "/store/privacy" },
-  { name: "Términos y Condiciones", href: "/store/terms" },
-  { name: "FAQ", href: "/store/faq" },
+  { name: "Rastrea tu Pedido", href: "/tracking" },
+  { name: "Política de Privacidad", href: "/privacy" },
+  { name: "Términos y Condiciones", href: "/terms" },
+  { name: "FAQ", href: "/faq" },
 ]
 
 const productCategories = [
-  { name: "Chaquetas F1", href: "/store/products?category=jackets" },
-  { name: "Hoodies", href: "/store/products?category=hoodies" },
-  { name: "Camisetas", href: "/store/products?category=t-shirts" },
-  { name: "Accesorios", href: "/store/products?category=accessories" },
+  { name: "Chaquetas F1", href: "/products?category=jackets" },
+  { name: "Hoodies", href: "/products?category=hoodies" },
+  { name: "Camisetas", href: "/products?category=t-shirts" },
+  { name: "Accesorios", href: "/products?category=accessories" },
 ]
 
 export function Footer() {

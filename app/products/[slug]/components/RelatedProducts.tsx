@@ -24,7 +24,7 @@ export default function RelatedProducts({ relatedProducts, categoryName, categor
           También te puede interesar
         </h2>
         <LinkButton
-          href={`/store/products?category=${categoryId}`}
+          href={`/products?category=${categoryId}`}
           variant="outline"
         >
           Ver más en {categoryName}
@@ -34,7 +34,7 @@ export default function RelatedProducts({ relatedProducts, categoryName, categor
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {relatedProducts.map((relatedProduct) => (
           <Card key={relatedProduct.id} className="group overflow-hidden">
-            <Link href={`/store/products/${relatedProduct.slug}`}>
+            <Link href={`/products/${relatedProduct.slug}`}>
               <div className="relative aspect-square overflow-hidden">
                 <Image
                   src={relatedProduct.images[0]?.url}
