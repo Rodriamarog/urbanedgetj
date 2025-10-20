@@ -57,24 +57,6 @@ export default function CheckoutPage() {
     country: "México"
   })
 
-  // DEV ONLY: Autofill test data
-  const autofillTestData = () => {
-    setContactInfo({
-      name: "Juan Pérez García",
-      email: "test@urbanedge.com",
-      phone: "+52 664 123 4567"
-    })
-    setShippingAddress({
-      addressLine1: "Av. Revolución 1234",
-      addressLine2: "Depto 5B",
-      colonia: "Zona Centro",
-      city: "Tijuana",
-      state: "BCN",
-      postalCode: "22000",
-      country: "México"
-    })
-  }
-
 
   const validateForm = (): boolean => {
     // Validate cart
@@ -156,22 +138,12 @@ export default function CheckoutPage() {
             Completa tu pedido de forma segura
           </p>
         </div>
-        <div className="flex gap-2">
-          {/* DEV ONLY: Autofill button */}
-          <Button
-            variant="secondary"
-            onClick={autofillTestData}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black"
-          >
-            🧪 Test Autofill
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/cart">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Volver al Carrito
-            </Link>
-          </Button>
-        </div>
+        <Button variant="outline" asChild>
+          <Link href="/cart">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver al Carrito
+          </Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -414,49 +386,6 @@ export default function CheckoutPage() {
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
                 <span>${state.total.toLocaleString()} MXN</span>
-              </div>
-            </div>
-
-            {/* DEV ONLY: Test Card Info */}
-            <div className="mb-4 p-3 bg-yellow-50 border-2 border-yellow-400 rounded-lg">
-              <p className="text-xs font-bold text-yellow-900 mb-2">🧪 TEST CARD (Copy & Paste):</p>
-              <div className="space-y-1 text-xs font-mono">
-                <div className="flex justify-between">
-                  <span className="text-yellow-800">Card:</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText('5031755734530604')}
-                    className="text-yellow-900 hover:text-yellow-600 underline"
-                  >
-                    5031 7557 3453 0604 📋
-                  </button>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-yellow-800">Expiry:</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText('11/25')}
-                    className="text-yellow-900 hover:text-yellow-600 underline"
-                  >
-                    11/25 📋
-                  </button>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-yellow-800">CVV:</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText('123')}
-                    className="text-yellow-900 hover:text-yellow-600 underline"
-                  >
-                    123 📋
-                  </button>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-yellow-800">Name:</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText('APRO')}
-                    className="text-yellow-900 hover:text-yellow-600 underline"
-                  >
-                    APRO 📋
-                  </button>
-                </div>
               </div>
             </div>
 
