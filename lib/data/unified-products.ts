@@ -552,66 +552,6 @@ export const unifiedProducts: Product[] = [
     seoDescription: 'Chaqueta Lamborghini Racing unisex. Diseño exclusivo, materiales de alta calidad. Envío gratis en México.',
     createdAt: '2024-10-01T00:00:00.000Z',
     updatedAt: '2024-10-06T00:00:00.000Z'
-  },
-
-  // TEST PRODUCT - For production testing
-  {
-    id: 'test-product-40',
-    name: 'Producto de Prueba - $40',
-    slug: 'producto-prueba-40',
-    description: 'Producto de prueba para validar el flujo completo de pago. SOLO PARA TESTING - NO COMPRAR.',
-    shortDescription: 'Producto de prueba $40 pesos',
-    price: 40,
-    basePrice: 34.48,
-    ivaPercentage: 16,
-    category: 'test',
-    subcategory: 'test',
-    images: [
-      {
-        id: 'test-product-1',
-        url: '/logo.jpg',
-        alt: 'Producto de Prueba',
-        isPrimary: true,
-        type: 'product',
-        order: 1,
-        gender: 'unisex'
-      }
-    ],
-    sizes: [
-      {
-        id: 'test-s',
-        name: 'S',
-        label: 'Small',
-        inStock: true,
-        stockQuantity: 999
-      },
-      {
-        id: 'test-m',
-        name: 'M',
-        label: 'Medium',
-        inStock: true,
-        stockQuantity: 999
-      }
-    ],
-    features: [
-      'Producto de prueba',
-      'No comprar',
-      'Solo para testing'
-    ],
-    materials: ['Test'],
-    careInstructions: ['Producto de prueba'],
-    reviews: [],
-    isBestseller: false,
-    isNew: true,
-    isLimited: false,
-    inStock: true,
-    stockQuantity: 999,
-    sku: 'TEST-001',
-    tags: ['test', 'prueba'],
-    seoTitle: 'Producto de Prueba - $40 - Urban Edge TJ',
-    seoDescription: 'Producto de prueba para testing.',
-    createdAt: '2024-10-18T00:00:00.000Z',
-    updatedAt: '2024-10-18T00:00:00.000Z'
   }
 ]
 

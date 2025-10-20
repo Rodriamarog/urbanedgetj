@@ -41,6 +41,18 @@ export default function OrderPendingPage() {
     }
   }, [transactionDetailsParam])
 
+  // Auto-open ticket URL when payment data is loaded
+  useEffect(() => {
+    if (paymentData) {
+      const ticketUrl = paymentData.transactionDetails?.external_resource_url
+      if (ticketUrl) {
+        // Automatically open the MercadoPago ticket in a new tab
+        console.log('Auto-opening ticket:', ticketUrl)
+        window.open(ticketUrl, '_blank')
+      }
+    }
+  }, [paymentData])
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
     setCopied(true)
@@ -100,7 +112,7 @@ export default function OrderPendingPage() {
           instructions: [
             `Acude a cualquier tienda ${methodName}`,
             'Indica al cajero que vas a realizar un pago de servicio',
-            'Proporciona el código de referencia o muestra el código de barras',
+            'Muestra la ficha de pago con el código de barras al cajero',
             'Realiza el pago en efectivo',
             'Conserva tu comprobante de pago',
             'Recibirás un email de confirmación cuando se procese tu pago'
@@ -126,7 +138,7 @@ export default function OrderPendingPage() {
           instructions: [
             'Acude al punto de pago que seleccionaste',
             'Indica al cajero que vas a realizar un pago de servicio',
-            'Proporciona el código de referencia o muestra el código de barras',
+            'Muestra la ficha de pago con el código de barras al cajero',
             'Realiza el pago en efectivo',
             'Conserva tu comprobante de pago',
             'Recibirás un email de confirmación cuando se procese tu pago'
@@ -225,7 +237,7 @@ export default function OrderPendingPage() {
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Proporciona este código al cajero
+                    Código de referencia (muestra la ficha completa al cajero)
                   </p>
                 </div>
               </div>
@@ -239,7 +251,7 @@ export default function OrderPendingPage() {
                     onClick={() => window.open(oxxoData.ticketUrl, '_blank')}
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Descargar ficha de pago
+                    Ver ficha de pago nuevamente
                   </Button>
                 </div>
               )}
