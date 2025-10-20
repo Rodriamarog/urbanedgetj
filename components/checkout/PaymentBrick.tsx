@@ -275,11 +275,11 @@ export default function PaymentBrick({
   return (
     <div className="payment-brick-container">
       {isProcessing && (
-        <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-[9999] flex items-center justify-center">
-          <div className="flex flex-col items-center p-8 bg-card rounded-lg shadow-2xl border border-border">
-            <Loader2 className="w-16 h-16 animate-spin text-primary" />
-            <p className="mt-6 text-xl font-semibold">Procesando pago...</p>
-            <p className="text-sm text-muted-foreground mt-2">Por favor espera, no cierres esta ventana</p>
+        <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="flex flex-col items-center p-6 sm:p-8 bg-card rounded-lg shadow-2xl border border-border max-w-sm w-full mx-auto text-center">
+            <Loader2 className="w-12 h-12 sm:w-16 sm:h-16 animate-spin text-primary" />
+            <p className="mt-4 sm:mt-6 text-lg sm:text-xl font-semibold">Procesando pago...</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-2">Por favor espera, no cierres esta ventana</p>
           </div>
         </div>
       )}
