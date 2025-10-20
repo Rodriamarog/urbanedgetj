@@ -97,6 +97,9 @@ export default function PaymentBrick({
 
     setIsProcessing(true)
 
+    // Scroll to top so user sees the loading overlay
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
     try {
       // Debug: Log what MercadoPago sends
       console.log('MercadoPago param:', param)
@@ -272,11 +275,11 @@ export default function PaymentBrick({
   return (
     <div className="payment-brick-container">
       {isProcessing && (
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="flex flex-col items-center">
-            <Loader2 className="w-12 h-12 animate-spin text-primary" />
-            <p className="mt-4 text-lg font-medium">Procesando pago...</p>
-            <p className="text-sm text-muted-foreground">Por favor espera</p>
+        <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-[9999] flex items-center justify-center">
+          <div className="flex flex-col items-center p-8 bg-card rounded-lg shadow-2xl border border-border">
+            <Loader2 className="w-16 h-16 animate-spin text-primary" />
+            <p className="mt-6 text-xl font-semibold">Procesando pago...</p>
+            <p className="text-sm text-muted-foreground mt-2">Por favor espera, no cierres esta ventana</p>
           </div>
         </div>
       )}
