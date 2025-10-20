@@ -115,7 +115,10 @@ export default function PaymentBrick({
         paymentMethodId: formData.payment_method_id,
         payer: {
           email: customerEmail,
-          identification: formData.payer?.identification
+          // Only include identification if it exists
+          ...(formData.payer?.identification && {
+            identification: formData.payer.identification
+          })
         },
 
         // Order data
@@ -151,7 +154,10 @@ export default function PaymentBrick({
       console.log('Processing payment with order data:', {
         externalReference,
         amount,
-        items: items.length
+        items: items.length,
+        paymentMethod: formData.payment_method_id,
+        hasIdentification: !!formData.payer?.identification,
+        identification: formData.payer?.identification
       })
 
       // STEP 4: Send to backend (creates order + processes payment)

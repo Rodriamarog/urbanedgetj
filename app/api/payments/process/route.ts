@@ -81,7 +81,10 @@ export async function POST(request: NextRequest) {
       payment_method_id: body.paymentMethodId,
       payer: {
         email: body.payer.email,
-        identification: body.payer.identification
+        // Only include identification if it exists (not undefined)
+        ...(body.payer.identification && {
+          identification: body.payer.identification
+        })
       },
       external_reference: body.externalReference,
       statement_descriptor: 'URBAN EDGE TJ',
